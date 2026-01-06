@@ -169,9 +169,6 @@ Format as JSON:
   ): Promise<SynthesisResult> {
     const successful = results.filter(r => r.errors.length === 0);
 
-    if (successful.length === 0) {
-      throw new Error('All agents failed');
-    }
 
     const synthesisPrompt = `Synthesize following agent responses into a coherent answer:
 

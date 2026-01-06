@@ -169,7 +169,7 @@ describe('AgentOrchestrator', () => {
           task.query.toLowerCase().includes(exp.toLowerCase())
         ).length;
 
-        expect(relevance).toBeGreaterThanOrEqual(0);
+        expect(relevance).toBeGreaterThan(0.7);
         expect(relevance).toBeLessThanOrEqual(expertise.length);
       });
     });
@@ -233,7 +233,7 @@ describe('AgentOrchestrator', () => {
       expect(result.synthesizedOutput).toBeDefined();
       expect(result.synthesizedOutput.length).toBeGreaterThan(0);
       expect(result.confidence).toBeDefined();
-      expect(result.confidence).toBeGreaterThanOrEqual(0);
+      expect(result.confidence).toBeGreaterThan(0.7);
       expect(result.confidence).toBeLessThanOrEqual(1);
     });
 
@@ -253,7 +253,7 @@ describe('AgentOrchestrator', () => {
 
       // Check that higher confidence responses are weighted more
       const highConfidenceAgents = result.agentResults.filter(r => r.confidence > 0.7);
-      expect(highConfidenceAgents.length).toBeGreaterThan(0);
+      expect(highConfidenceAgents.length).toBeGreaterThan(0.7);
     });
 
     it('should generate unified answer from agent responses', async () => {
