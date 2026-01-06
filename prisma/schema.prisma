@@ -16,9 +16,9 @@ datasource db {
 
 model ConstraintProfile {
   id              String   @id @default(cuid())
-  constraintType  String   // 'SENSORY' | 'STRUCTURAL' | 'INTERPRETIVE' | 'ENVIRONMENTAL'
+  constraintType  String
   name            String
-  value           Json
+  value           String
   severity        Float    @default(1.0)
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
@@ -28,18 +28,18 @@ model ConstraintProfile {
 model InternalState {
   id              String   @id @default(cuid())
   cycle           Int
-  activeConcepts   Json
-  workingMemory    Json
-  attentionWeights Json
-  activationLevels Json
+  activeConcepts   String
+  workingMemory    String
+  attentionWeights String
+  activationLevels String
   createdAt       DateTime @default(now())
 }
 
 model EmergenceSignal {
   id          String   @id @default(cuid())
-  signalType  String   // 'IDENTITY' | 'INTENT' | 'MEANING' | 'AGENCY'
+  signalType  String
   strength    Float
-  metadata    Json
+  metadata    String
   timestamp   DateTime @default(now())
 }
 
@@ -55,7 +55,7 @@ model ReasoningTrace {
   // Loop 1: Intuition
   ethicalRiskScore    Float
   riskCategory       String
-  riskFactors        Json
+  riskFactors        String
 
   // Loop 2: Logic Check
   strategy          String
@@ -66,8 +66,8 @@ model ReasoningTrace {
   // Loop 3: Self-Critique
   ccrr              Float
   decision          String
-  justification     Json
-  improvementPlan   Json?
+  justification     String
+  improvementPlan   String?
 
   createdAt         DateTime @default(now())
 }
@@ -75,7 +75,7 @@ model ReasoningTrace {
 model ImprovementPlan {
   id          String   @id @default(cuid())
   traceId     String
-  areas       Json
+  areas       String
   priority    Int
   timeline    String
   status      String   @default("PENDING")
@@ -90,12 +90,12 @@ model Concept {
   id                    String   @id @default(cuid())
   name                  String   @unique
   frequency             Int      @default(0)
-  contexts              Json
-  relationships         Json
+  contexts              String
+  relationships         String
   confidence            Float    @default(0.0)
   firstSeen             DateTime @default(now())
   lastSeen              DateTime @default(now())
-  semanticTags          Json
+  semanticTags          String
   evidenceCount          Int      @default(0)
   contradictionCount    Int      @default(0)
   createdAt             DateTime @default(now())
@@ -104,17 +104,17 @@ model Concept {
 
 model Experience {
   id          String   @id @default(cuid())
-  concepts    Json
-  relationships Json
-  metadata    Json
-  rawContext  String   @db.Text
+  concepts    String
+  relationships String
+  metadata    String
+  rawContext  String   
   timestamp   DateTime @default(now())
 }
 
 model ConsolidationTask {
   id          String   @id @default(cuid())
-  concepts    Json
-  data        Json
+  concepts    String
+  data        String
   priority    Int      @default(0)
   status      String   @default("PENDING")
   timestamp   DateTime @default(now())
@@ -130,10 +130,10 @@ model Agent {
   agentId         String   @unique
   name            String
   domain          String
-  expertise       Json
-  capabilities    Json
+  expertise       String
+  capabilities    String
   status          String   @default("ACTIVE")
-  metrics         Json
+  metrics         String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -142,20 +142,20 @@ model AgentTask {
   id              String   @id @default(cuid())
   taskId          String
   agentId         String
-  task            Json
-  response        String   @db.Text
+  task            String
+  response        String   
   confidence      Float
-  reasoning       String   @db.Text
+  reasoning       String   
   duration        Int
-  errors          Json
+  errors          String
   createdAt       DateTime @default(now())
 }
 
 model SynthesisResult {
   id              String   @id @default(cuid())
   queryId         String
-  agentResults     Json
-  synthesizedOutput Json
+  agentResults     String
+  synthesizedOutput String   
   confidence      Float
   createdAt       DateTime @default(now())
 }
@@ -169,10 +169,10 @@ model BinaryUnit {
   unitType    String
   version     String   @default("1.0.0")
   status      String   @default("ACTIVE")
-  config      Json
-  metrics     Json
+  config      String
+  metrics     String
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt       DateTime @updatedAt
 }
 
 model DataPacket {
@@ -180,7 +180,7 @@ model DataPacket {
   packetType  String
   source      String
   target      String?
-  payload     Json
+  payload     String
   size        Int      @default(0)
   checksum    String   @default("")
   processed   Boolean  @default(false)
@@ -202,7 +202,7 @@ model EncryptionKey {
 
 model EncryptedPacket {
   id          String   @id @default(cuid())
-  data        String   @db.Text
+  data        String   
   iv          String
   tag         String
   keyId       String
@@ -219,8 +219,8 @@ model ImprovementCycle {
   cycleNumber     Int      @unique
   constraintLevel Float    @default(1.0)
   success         Boolean
-  improvements    Json
-  newCode         String   @db.Text
+  improvements    String
+  newCode         String   
   performanceChange Float
   confidence      Float
   createdAt       DateTime @default(now())
@@ -229,10 +229,10 @@ model ImprovementCycle {
 model CodebaseAnalysis {
   id                String   @id @default(cuid())
   cycleId           String
-  complexityMetrics  Json
-  bottlenecks       Json
-  codeSmells        Json
+  complexityMetrics  String
+  bottlenecks       String
+  codeSmells        String
   testCoverage      Float
-  securityIssues    Json
+  securityIssues    String
   createdAt        DateTime @default(now())
 }

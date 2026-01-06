@@ -15,17 +15,18 @@ export async function POST(request: NextRequest) {
     await db.reasoningTrace.create({
       data: {
         queryId: trace.queryId,
+        userId: context?.userId || null,
         ethicalRiskScore: trace.ethicalRiskScore,
         riskCategory: trace.riskCategory,
-        riskFactors: trace.riskFactors,
+        riskFactors: JSON.stringify(trace.riskFactors),
         strategy: trace.strategy,
         certaintyGain: trace.certaintyGain,
         timePenalty: trace.timePenalty,
         computationalCost: trace.computationalCost,
         ccrr: trace.ccrr,
         decision: trace.decision,
-        justification: trace.justification,
-        improvementPlan: trace.improvementPlan
+        justification: JSON.stringify(trace.justification),
+        improvementPlan: trace.improvementPlan ? JSON.stringify(trace.improvementPlan) : null,
       }
     });
 

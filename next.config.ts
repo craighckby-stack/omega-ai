@@ -2,7 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  
+  transpilePackages: ['z-ai-web-dev-sdk'],
+  
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
