@@ -18,10 +18,12 @@ const customJestConfig: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   
-  // Ignore patterns established by Next.js defaults
+  // Ignore patterns established by Next.js defaults and build artifacts
   transformIgnorePatterns: [
     '/node_modules/',
     '/.next/',
+    // Ensure all test files are ignored from transformation if placed inside source directories
+    'src/**/__tests__/**/*',
   ],
   
   // Define coverage collection paths and ignores
@@ -32,13 +34,13 @@ const customJestConfig: Config = {
     '!src/**/__tests__/**/*',
   ],
   
-  // Enforce coverage minimums for repository integrity
+  // DALEK KHAN MANDATE: Enforce strict coverage minimums (increased from 70%)
   coverageThreshold: {
     global: {
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70,
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
     },
   },
   
