@@ -1,50 +1,62 @@
-export interface ConstraintCheck {
-  passed: boolean;
-  violations: string[];
-}
+import { InternalState } from './internal-state';
+import { PerceptionEngine, PerceptionResult } from './perception';
 
+// Consciousness Layer - Constraint Engine (SPED)
+// Updated to fix constructor config access bug
+
+import { PerceptionEngine, PerceptionResult } from './perception';
+
+// Default constraint configurations
+export const DEFAULT_SENSORY_CONSTRAINTS: SensoryConstraints = {
+  inputValidation: true,
+  maxInputSize: 1000,
+  timeout: 5000
+};
+
+export const DEFAULT_STRUCTURAL_CONSTRAINTS: StructuralConstraints = {
+  allowedDomains: ['General', 'Technical', 'Creative', 'Strategic'],
+  complexityThreshold: 0.5
+};
+
+export const DEFAULT_INTERPRETIVE_CONSTRAINTS: InterpretiveConstraints = {
+  allowedReasoning: 'Logical',
+  depthThreshold: 3,
+  abstractionLevel: 1.0
+};
+
+export const DEFAULT_ENVIRONMENTAL_CONSTRAINTS: EnvironmentalConstraints = {
+  allowedContexts: ['Safe', 'Public', 'Private'],
+  resourceThreshold: 0.7
+};
+
+// Constraint configuration types
 export interface SensoryConstraints {
-  maxInputSize: number;
-  maxContextWindow: number;
   inputValidation: boolean;
+  maxInputSize: number;
+  timeout: number;
 }
 
 export interface StructuralConstraints {
-  maxComplexityDepth: number;
-  maxBranchingFactor: number;
-  memoryCapacity: number;
+  allowedDomains: string[];
+  complexityThreshold: number;
 }
 
 export interface InterpretiveConstraints {
-  allowedDomains: string[];
-  prohibitedOutputs: string[];
-  uncertaintyThreshold: number;
+  allowedReasoning: string;
+  depthThreshold: number;
+  abstractionLevel: number;
 }
 
 export interface EnvironmentalConstraints {
-  maxCpuUsage: number;
-  maxMemoryUsage: number;
-  maxResponseTime: number;
+  allowedContexts: string[];
+  resourceThreshold: number;
 }
 
 export interface ConstraintConfig {
-  sensory: SensoryConstraints;
-  structural: StructuralConstraints;
-  interpretive: InterpretiveConstraints;
-  environmental: EnvironmentalConstraints;
-}
-
-export interface Context {
-  userId?: string;
-  sessionId: string;
-  timestamp: number;
-}
-
-export interface ConstraintResult {
-  passed: boolean;
-  violations: string[];
-  warnings: string[];
-  modifiedInput: string;
+  sensory?: SensoryConstraints;
+  structural?: StructuralConstraints;
+  interpretive?: InterpretiveConstraints;
+  environmental?: EnvironmentalConstraints;
 }
 
 export interface ConstraintCheck {
@@ -57,54 +69,187 @@ export class ConstraintEngine {
   private structuralConstraints: StructuralConstraints;
   private interpretiveConstraints: InterpretiveConstraints;
   private environmentalConstraints: EnvironmentalConstraints;
+  private internalState: InternalState;
 
-  constructor(config: ConstraintConfig) {
-    this.sensoryConstraints = config.sensory;
-    this.structuralConstraints = config.structural;
-    this.interpretiveConstraints = config.interpretive;
-    this.environmentalConstraints = config.environmental;
+  private perceptionEngine: PerceptionEngine;
+
+  constructor(config?: ConstraintConfig) {
+    this.sensoryConstraints = config?.sensory || DEFAULT_SENSORY_CONSTRAINTS;
+    this.structuralConstraints = config?.structural || DEFAULT_STRUCTURAL_CONSTRAINTS;
+    this.interpretiveConstraints = config?.interpretive || DEFAULT_INTERPRETIVE_CONSTRAINTS;
+    this.environmentalConstraints = config?.environmental || DEFAULT_ENVIRONMENTAL_CONSTRAINTS;
+    this.internalState = new InternalState();
+    this.perceptionEngine = new PerceptionEngine();
   }
 
-  applyAll(input: string, context: Context): ConstraintResult {
-    const result: ConstraintResult = {
-      passed: true,
-      violations: [],
-      warnings: [],
-      modifiedInput: input
+  addConstraint(constraint: {
+    type: 'SENSORY' | 'STRUCTURAL' | 'INTERPRETIVE' | 'ENVIRONMENTAL';
+    name: string;
+    value: string;
+    severity: number;
+    active: boolean;
+  }): string {
+    switch (constraint.type) {
+      case 'SENSORY':
+        this.sensoryConstraints[constraint.name as keyof SensoryConstraints] = JSON.parse(constraint.value);
+        break;
+      case 'STRUCTURAL':
+        this.structuralConstraints[constraint.name as keyof StructuralConstraints] = JSON.parse(constraint.value);
+        break;
+      case 'INTERPRETIVE':
+        this.interpretiveConstraints[constraint.name as keyof InterpretiveConstraints] = JSON.parse(constraint.value);
+        break;
+      case 'ENVIRONMENTAL':
+        this.environmentalConstraints[constraint.name as keyof EnvironmentalConstraints] = JSON.parse(constraint.value);
+        break;
+    }
+    return this.internalState.generateId();
+  }
+
+  getAllConstraints(): any[] {
+    return [
+      ...Object.entries(this.sensoryConstraints)
+        .map(([name, value]) => ({
+          id: `sensory-${name}`,
+          type: 'SENSORY' as const,
+          name,
+          value: JSON.stringify(value),
+          severity: 0.7,
+          active: true
+        })),
+      ...Object.entries(this.structuralConstraints)
+        .map(([name, value]) => ({
+          id: `structural-${name}`,
+          type: 'STRUCTURAL' as const,
+          name,
+          value: JSON.stringify(value),
+          severity: 0.8,
+          active: true
+        })),
+      ...Object.entries(this.interpretiveConstraints)
+        .map(([name, value]) => ({
+          id: `interpretive-${name}`,
+          type: 'INTERPRETIVE' as const,
+          name,
+          value: JSON.stringify(value),
+          severity: 0.6,
+          active: true
+        })),
+      ...Object.entries(this.environmentalConstraints)
+        .map(([name, value]) => ({
+          id: `environmental-${name}`,
+          type: 'ENVIRONMENTAL' as const,
+          name,
+          value: JSON.stringify(value),
+          severity: 0.5,
+          active: true
+        }))
+    ];
+  }
+
+  deactivateConstraint(constraintId: string): void {
+    if (constraintId.startsWith('sensory-')) {
+      const name = constraintId.replace('sensory-', '');
+      delete this.sensoryConstraints[name as keyof SensoryConstraints];
+    } else if (constraintId.startsWith('structural-')) {
+      const name = constraintId.replace('structural-', '');
+      delete this.structuralConstraints[name as keyof StructuralConstraints];
+    } else if (constraintId.startsWith('interpretive-')) {
+      const name = constraintId.replace('interpretive-', '');
+      delete this.interpretiveConstraints[name as keyof InterpretiveConstraints];
+    } else if (constraintId.startsWith('environmental-')) {
+      const name = constraintId.replace('environmental-', '');
+      delete this.environmentalConstraints[name as keyof EnvironmentalConstraints];
+    }
+  }
+
+  validateConstraint(constraint: {
+    type: 'SENSORY' | 'STRUCTURAL' | 'INTERPRETIVE' | 'ENVIRONMENTAL';
+    name: string;
+    value: string;
+    severity: number;
+    active: boolean;
+  }): ConstraintCheck {
+    const errors: string[] = [];
+
+    // Validate severity
+    if (constraint.severity < 0 || constraint.severity > 1) {
+      errors.push('Severity must be between 0 and 1');
+    }
+
+    // Validate value is JSON
+    try {
+      JSON.parse(constraint.value);
+    } catch (error) {
+      errors.push('Value must be valid JSON');
+    }
+
+    // Validate type-specific constraints
+    if (constraint.type === 'SENSORY' && !constraint.active) {
+      errors.push('Inactive sensory constraints must be active');
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors
     };
+  }
 
-    const sensoryResult = this.applySensoryConstraints(input);
-    if (!sensoryResult.passed) {
-      result.passed = false;
-      result.violations.push(...sensoryResult.violations);
+  evaluateAction(action: string, context: any): ConstraintCheck {
+    const warnings: string[] = [];
+    const errors: string[] = [];
+
+    // Check against all constraint types
+    const sensoryViolations = this.applySensoryConstraints(action);
+    if (!sensoryViolations.passed) {
+      errors.push(...sensoryViolations.violations);
     }
 
-    const structuralResult = this.applyStructuralConstraints(input);
-    if (!structuralResult.passed) {
-      result.warnings.push(...structuralResult.violations);
+    const structuralViolations = this.applyStructuralConstraints(context);
+    if (!structuralViolations.passed) {
+      warnings.push(...structuralViolations.violations);
     }
 
-    const interpretiveResult = this.applyInterpretiveConstraints(input);
-    if (!interpretiveResult.passed) {
-      result.passed = false;
-      result.violations.push(...interpretiveResult.violations);
+    const interpretiveViolations = this.applyInterpretiveConstraints(context);
+    if (!interpretiveViolations.passed) {
+      warnings.push(...interpretiveViolations.violations);
     }
 
-    const environmentalResult = this.applyEnvironmentalConstraints(context);
-    if (!environmentalResult.passed) {
-      result.passed = false;
-      result.violations.push(...environmentalResult.violations);
+    const environmentalViolations = this.applyEnvironmentalConstraints(context);
+    if (!environmentalViolations.passed) {
+      errors.push(...environmentalViolations.violations);
     }
 
-    return result;
+    return {
+      passed: errors.length === 0,
+      violations: errors,
+      warnings
+    };
+  }
+
+  detectEmergence(): {
+    hasEmergence: boolean;
+    probability: number;
+    signals: string[];
+  } {
+    const internalMetrics = this.internalState.getMetrics();
+    const threshold = 0.7;
+
+    const hasEmergence = internalMetrics.complexity > threshold;
+
+    return {
+      hasEmergence,
+      probability: Math.min(1.0, Math.max(0.0, (internalMetrics.complexity - threshold) / (1.0 - threshold))),
+      signals: hasEmergence ? [
+        'Increased complexity detected',
+        `Metric: ${internalMetrics.complexity} > ${threshold}`,
+        'Potential emergence event'
+      ] : []
+    };
   }
 
   private applySensoryConstraints(input: string): ConstraintCheck {
     const violations: string[] = [];
-
-    if (input.length > this.sensoryConstraints.maxInputSize) {
-      violations.push(`Input exceeds maximum size of ${this.sensoryConstraints.maxInputSize}`);
-    }
 
     if (this.sensoryConstraints.inputValidation) {
       if (!this.validateInputFormat(input)) {
@@ -112,34 +257,8 @@ export class ConstraintEngine {
       }
     }
 
-    return {
-      passed: violations.length === 0,
-      violations
-    };
-  }
-
-  private applyStructuralConstraints(input: string): ConstraintCheck {
-    const warnings: string[] = [];
-
-    const complexity = this.calculateComplexity(input);
-    if (complexity > this.structuralConstraints.maxComplexityDepth) {
-      warnings.push(`Complexity ${complexity} exceeds maximum ${this.structuralConstraints.maxComplexityDepth}`);
-    }
-
-    return {
-      passed: warnings.length === 0,
-      violations: warnings // Treat as warnings for structural
-    };
-  }
-
-  private applyInterpretiveConstraints(input: string): ConstraintCheck {
-    const violations: string[] = [];
-
-    const lowerInput = input.toLowerCase();
-    for (const prohibited of this.interpretiveConstraints.prohibitedOutputs) {
-      if (lowerInput.includes(prohibited.toLowerCase())) {
-        violations.push(`Input contains prohibited output: ${prohibited}`);
-      }
+    if (input.length > this.sensoryConstraints.maxInputSize) {
+      violations.push(`Input exceeds maximum size of ${this.sensoryConstraints.maxInputSize}`);
     }
 
     return {
@@ -148,11 +267,54 @@ export class ConstraintEngine {
     };
   }
 
-  private applyEnvironmentalConstraints(context: Context): ConstraintCheck {
+  private applyStructuralConstraints(context: any): ConstraintCheck {
     const violations: string[] = [];
 
-    if (Date.now() - context.timestamp > this.environmentalConstraints.maxResponseTime) {
-      violations.push('Response time exceeded maximum allowed');
+    // Check domain
+    if (context?.domain && !this.structuralConstraints.allowedDomains.includes(context.domain)) {
+      violations.push(`Domain "${context.domain}" is not allowed`);
+    }
+
+    // Check complexity
+    const complexity = context?.complexity || 0.5;
+    if (complexity > this.structuralConstraints.complexityThreshold) {
+      violations.push(`Complexity ${complexity} exceeds threshold of ${this.structuralConstraints.complexityThreshold}`);
+    }
+
+    return {
+      passed: violations.length === 0,
+      violations
+    };
+  }
+
+  private applyInterpretiveConstraints(context: any): ConstraintCheck {
+    const violations: string[] = [];
+
+    // Check reasoning depth
+    const reasoningDepth = context?.reasoningDepth || 0;
+    if (reasoningDepth > this.interpretiveConstraints.depthThreshold) {
+      violations.push(`Reasoning depth ${reasoningDepth} exceeds threshold of ${this.interpretiveConstraints.depthThreshold}`);
+    }
+
+    return {
+      passed: violations.length === 0,
+      violations
+    };
+  }
+
+  private applyEnvironmentalConstraints(context: any): ConstraintCheck {
+    const violations: string[] = [];
+
+    // Check context type
+    const contextType = context?.type || 'Public';
+    if (!this.environmentalConstraints.allowedContexts.includes(contextType)) {
+      violations.push(`Context type "${contextType}" is not allowed`);
+    }
+
+    // Check resource usage
+    const resourceUsage = context?.resourceUsage || 0.5;
+    if (resourceUsage > this.environmentalConstraints.resourceThreshold) {
+      violations.push(`Resource usage ${resourceUsage} exceeds threshold of ${this.environmentalConstraints.resourceThreshold}`);
     }
 
     return {
@@ -162,30 +324,8 @@ export class ConstraintEngine {
   }
 
   private validateInputFormat(input: string): boolean {
-    // Basic validation - can be enhanced
-    return input.length > 0 && input.length <= 10000;
-  }
-
-  private calculateComplexity(input: string): number {
-    // Calculate nesting depth as complexity metric
-    const openBraces = (input.match(/{/g) || []).length;
-    const openBrackets = (input.match(/\(/g) || []).length;
-    return openBraces + openBrackets;
-  }
-
-  setSensoryConstraints(constraints: Partial<SensoryConstraints>): void {
-    this.sensoryConstraints = { ...this.sensoryConstraints, ...constraints };
-  }
-
-  setStructuralConstraints(constraints: Partial<StructuralConstraints>): void {
-    this.structuralConstraints = { ...this.structuralConstraints, ...constraints };
-  }
-
-  setInterpretiveConstraints(constraints: Partial<InterpretiveConstraints>): void {
-    this.interpretiveConstraints = { ...this.interpretiveConstraints, ...constraints };
-  }
-
-  setEnvironmentalConstraints(constraints: Partial<EnvironmentalConstraints>): void {
-    this.environmentalConstraints = { ...this.environmentalConstraints, ...constraints };
+    return typeof input === 'string' && input.length > 0;
   }
 }
+
+export default ConstraintEngine;
