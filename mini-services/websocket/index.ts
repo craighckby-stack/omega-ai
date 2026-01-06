@@ -14,7 +14,7 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', (socket) => {
-  console.log(`📡 Client connected: ${socket.id}`);
+  console.log(`ðŸ“¡ Client connected: ${socket.id}`);
 
   // Join default rooms
   socket.join('metrics');
@@ -44,8 +44,8 @@ io.on('connection', (socket) => {
 
   // Reasoning room
   socket.on('join-reasoning', () => {
-    socket.join('reasioning');
-    socket.emit('joined-reasoning', { room: 'reasioning' });
+    socket.join('reasoning'); // FIX: Corrected typo from 'reasioning'
+    socket.emit('joined-reasoning', { room: 'reasoning' }); // FIX: Corrected typo
   });
 
   // Memory room
@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('broadcast-reasoning', (data) => {
-    socket.to('reasioning').emit('reasioning-update', data);
+    socket.to('reasoning').emit('reasoning-update', data); // FIX: Corrected room ('reasoning') and emitted event name ('reasoning-update')
   });
 
   socket.on('broadcast-memory', (data) => {
@@ -83,14 +83,14 @@ io.on('connection', (socket) => {
 });
 
 io.on('disconnect', (socket) => {
-  console.log(`📡 Client disconnected: ${socket.id}`);
+  console.log(`ðŸ“¡ Client disconnected: ${socket.id}`);
 });
 
 const PORT = process.env.WEBSOCKET_PORT || 3003;
 
 httpServer.listen(PORT, () => {
-  console.log(`🚀 WebSocket service running on port ${PORT}`);
-  console.log(`📡 Connected clients: ${io.engine.clientsCount}`);
+  console.log(`ðŸš€ WebSocket service running on port ${PORT}`);
+  console.log(`ðŸ“¡ Connected clients: ${io.engine.clientsCount}`);
 });
 
 export { io, httpServer };
