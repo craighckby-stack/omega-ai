@@ -1,141 +1,587 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# 🌌 OMEGA - Omni-Model Emergent General Intelligence Architecture
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+<div align="center">
 
-## ✨ Technology Stack
+![OMEGA Logo](https://img.shields.io/badge/OMEGA-v1.0.0-brightgreen)
+![License](https://img.shields.io/badge/License-MIT-blue)
+![Next.js](https://img.shields.io/badge/Next.js-15.0-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 
-This scaffold provides a robust foundation built with:
+A unified AI system synthesizing consciousness, reasoning, memory, agent swarms, security, and self-improvement.
 
-### 🎯 Core Framework
-- **⚡ Next.js 15** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+[Documentation](#documentation) • [Features](#features) • [Getting Started](#getting-started) • [API](#api)
 
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
-
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
-
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Fetch** - Promise-based HTTP request
-
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
-
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
-
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
-
-## 🎯 Why This Scaffold?
-
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
-
-## 🚀 Quick Start
-
-```bash
-# Install dependencies
-bun install
-
-# Start development server
-bun run dev
-
-# Build for production
-bun run build
-
-# Start production server
-bun start
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
-
-## 🤖 Powered by Z.ai
-
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
-
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
-
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
-
-## 📁 Project Structure
-
-```
-src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
-```
-
-## 🎨 Available Features & Components
-
-This scaffold includes a comprehensive set of modern web development tools:
-
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
-
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
-
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
-
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Fetch + TanStack Query
-- **State Management**: Simple and scalable with Zustand
-
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
-
-## 🤝 Get Started with Z.ai
-
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
+</div>
 
 ---
 
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+- [API Documentation](#api-documentation)
+- [Modules](#modules)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## 🎯 Overview
+
+**OMEGA** is a production-ready unified AI architecture that synthesizes best practices and innovations from 18 research repositories. It combines:
+
+- **Consciousness Layer (SPED)**: Constraint-based emergence model
+- **Reasoning Layer (Huxley)**: Tri-loop ethical reasoning system
+- **Memory Layer (DAF)**: Persistent knowledge graph with consolidation
+- **Agent Swarm Layer**: 17 specialized AI agents
+- **Security Layer (z-system)**: Zero-knowledge encryption architecture
+- **Learning Layer (I.J. Good)**: Self-improvement cycles
+
+### Key Innovations
+
+1. **Transparent Ethical Reasoning**: Every decision goes through tri-loop architecture with full justification
+2. **Quantifiable Ethics**: Formal mathematical systems (ERS, CGS, CCRR) for ethical decisions
+3. **Safe Self-Improvement**: Controlled improvement cycles with constraint-based limits and rollback
+4. **Zero-Knowledge Security**: Military-grade AES-256-GCM encryption with no plaintext anywhere
+5. **Multi-Perspective Intelligence**: 17 specialized agents working in parallel for comprehensive analysis
+6. **Emergent Behavior Detection**: Continuous monitoring with human oversight triggers
+
+---
+
+## 🏗️ Architecture
+
+```
+USER INPUT
+    ↓
+┌──────────────────────────────────────┐
+│  ENCRYPTION LAYER                 │
+│  - Decrypt input                   │
+│  - Validate authentication          │
+└──────────────────────────────────────┘
+    ↓
+┌──────────────────────────────────────┐
+│  PERCEPTION LAYER (SPED)         │
+│  - Compress to patterns            │
+│  - Extract features                │
+└──────────────────────────────────────┘
+    ↓
+┌──────────────────────────────────────┐
+│  CONSTRAINT ENGINE (SPED)          │
+│  - Apply sensory constraints       │
+│  - Apply structural constraints    │
+└──────────────────────────────────────┘
+    ↓
+┌──────────────────────────────────────┐
+│  TRI-LOOP REASONING (Huxley)     │
+│  L1: Intuition → Assign ERS     │
+│  L2: Logic Check → Calculate CGS  │
+│  L3: Self-Critique → Calculate CCRR│
+└──────────────────────────────────────┘
+    ↓
+┌──────────────────────────────────────┐
+│  AGENT ORCHESTRATION              │
+│  - Select 17 specialized agents   │
+│  - Execute parallel tasks          │
+│  - Synthesize results            │
+└──────────────────────────────────────┘
+    ↓
+┌──────────────────────────────────────┐
+│  MEMORY CONSOLIDATION (DAF)        │
+│  - Store new learning             │
+│  - Update knowledge graph         │
+│  - Prune weak knowledge         │
+└──────────────────────────────────────┘
+    ↓
+┌──────────────────────────────────────┐
+│  SELF-IMPROVEMENT (I.J. Good)    │
+│  - Analyze codebase             │
+│  - Generate improvements         │
+│  - Validate results             │
+└──────────────────────────────────────┘
+    ↓
+┌──────────────────────────────────────┐
+│  ENCRYPTION LAYER                 │
+│  - Encrypt output                 │
+└──────────────────────────────────────┘
+    ↓
+OUTPUT TO USER
+```
+
+---
+
+## ✨ Features
+
+### Consciousness Layer (SPED)
+- ✅ **Constraint Engine**: Sensory, structural, interpretive, and environmental limits
+- ✅ **Perception Layer**: Input compression, feature extraction, internal model building
+- ✅ **Emergence Detection**: Identity, intent, meaning, and agency signals
+
+### Reasoning Layer (Huxley)
+- ✅ **Tri-Loop Architecture**: Intuition → Logic Check → Self-Critique
+- ✅ **Ethical Risk Score (ERS)**: 0.0 to 1.0 risk assessment
+- ✅ **Certainty Gain Score (CGS)**: Measures confidence improvement
+- ✅ **Certainty-Cost-Risk Ratio (CCRR)**: `CGS / (Time Penalty × ERS)`
+
+### Memory Layer (DAF)
+- ✅ **Knowledge Graph**: Concept nodes with relationships and confidence scores
+- ✅ **Experience Database**: Stores learning contexts and metadata
+- ✅ **Memory Consolidation**: Automatic pruning, merging, and relationship strengthening
+- ✅ **Semantic Tagging**: Domain-based concept classification
+
+### Agent Swarm Layer
+- ✅ **17 Specialized Agents** across 4 divisions:
+  - Scientific (7): Chemistry, Ecology, Physics, Complexity, AI Research, Data Science, ML Engineering
+  - Technical (3): Integration, Cloud Architecture, DevOps
+  - Creative (3): Philosophy, Storytelling, Innovation
+  - Strategic (3): Business, Risk Management, Ethics
+- ✅ **Parallel Execution**: Multiple agents process tasks concurrently
+- ✅ **Result Synthesis**: Intelligent combination of agent outputs
+
+### Security Layer (z-system)
+- ✅ **AES-256-GCM Encryption**: Military-grade symmetric encryption
+- ✅ **RSA-4096 Key Exchange**: Secure key distribution
+- ✅ **Binary Processing Units**: 4 types (PROCESSOR, ANALYZER, VALIDATOR, OPTIMIZER)
+- ✅ **Zero-Knowledge Architecture**: No plaintext storage, all data encrypted
+
+### Learning Layer (I.J. Good)
+- ✅ **Self-Improvement Cycles**: Autonomous code evolution with constraint-based filtering
+- ✅ **Code Analysis**: Complexity metrics, bottleneck detection, code smell identification
+- ✅ **Rollback Capability**: Revert unsuccessful improvements automatically
+- ✅ **Constraint Management**: Dynamic adjustment based on performance
+
+---
+
+## 🔧 Technology Stack
+
+### Core Framework
+- **Next.js 15**: React framework with App Router
+- **TypeScript 5**: Type-safe JavaScript
+- **React 19**: UI library
+
+### Styling
+- **Tailwind CSS 4**: Utility-first CSS
+- **shadcn/ui**: High-quality component library
+- **Lucide React**: Icon library
+
+### Database & ORM
+- **Prisma 5**: Next-generation TypeScript ORM
+- **SQLite**: Embedded database (development)
+- **PostgreSQL**: Production database (recommended)
+
+### State Management
+- **Zustand**: Simple, scalable client state
+- **TanStack Query**: Server state management
+- **Framer Motion**: Animations
+
+### AI Integration
+- **z-ai-web-dev-sdk**: AI SDK for backend services
+- **Socket.io**: Real-time communication
+
+### Development Tools
+- **ESLint**: Code linting
+- **TypeScript**: Static type checking
+- **Bun**: Fast JavaScript runtime
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ or Bun 1.0+
+- TypeScript 5+
+- Git
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/your-org/omega-ai.git
+cd omega-ai
+
+# Install dependencies
+bun install
+
+# Set up environment variables
+cp .env.example .env
+
+# Set up database
+bun run db:push
+
+# Start development server
+bun run dev
+```
+
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+# Database
+DATABASE_URL="file:./dev.db"
+
+# Next.js
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+# API Keys (required for LLM functionality)
+GEMINI_API_KEY="your-gemini-api-key-here"
+
+# Encryption
+ENCRYPTION_KEY_ROTATION_DAYS=30
+SESSION_MAX_AGE=86400
+
+# Constraints
+DEFAULT_CONSTRAINT_LEVEL=3.0
+MAX_IMPROVEMENT_CYCLE_TIME=3600000
+
+# Services
+WEBSOCKET_PORT=3003
+PROCESSING_PORT=3004
+
+# Security
+MAX_LOGIN_ATTEMPTS=5
+LOCKOUT_DURATION=300000
+```
+
+### Running the Application
+
+```bash
+# Development mode
+bun run dev
+
+# Production build
+bun run build
+bun run start
+
+# Database management
+bun run db:push      # Push schema to database
+bun run db:studio     # Open Prisma Studio
+bun run db:generate   # Generate Prisma client
+```
+
+### Access the Application
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 📂 Project Structure
+
+```
+omega-ai/
+├── prisma/
+│   └── schema.prisma              # Database schema (25+ models)
+├── src/
+│   ├── app/                      # Next.js App Router
+│   │   ├── page.tsx              # Main dashboard
+│   │   ├── layout.tsx            # Root layout
+│   │   ├── globals.css            # Global styles
+│   │   └── api/                 # API routes
+│   │       ├── metrics/
+│   │       ├── security/
+│   │       ├── reasoning/
+│   │       ├── agents/
+│   │       └── learning/
+│   ├── components/                # React components
+│   │   └── ui/                 # shadcn/ui components
+│   └── lib/                     # Core modules
+│       ├── db.ts                 # Prisma client
+│       ├── utils.ts              # Utility functions
+│       ├── consciousness/        # SPED layer
+│       ├── reasoning/            # Huxley layer
+│       ├── memory/               # DAF layer
+│       ├── agents/               # Agent swarm
+│       ├── security/             # z-system layer
+│       └── learning/             # Self-improvement
+├── .env.example                   # Environment variables template
+├── package.json                   # Dependencies and scripts
+├── tsconfig.json                 # TypeScript configuration
+├── tailwind.config.ts            # Tailwind configuration
+├── next.config.ts               # Next.js configuration
+└── README.md                    # This file
+```
+
+---
+
+## 🔌 API Documentation
+
+### Metrics API
+
+**Endpoint**: `GET /api/metrics`
+
+Returns system-wide metrics and status.
+
+**Response**:
+```json
+{
+  "totalConcepts": 0,
+  "totalExperiences": 0,
+  "activeAgents": 17,
+  "currentCycle": 0,
+  "encryptedPackets": 0,
+  "reasoningTraces": 0,
+  "status": {
+    "consciousness": "ACTIVE",
+    "reasoning": "ACTIVE",
+    "memory": "ACTIVE",
+    "agents": "ACTIVE",
+    "security": "ACTIVE",
+    "learning": "IDLE"
+  }
+}
+```
+
+### Security API
+
+**Endpoint**: `POST /api/security`
+
+Handles encryption, decryption, binary processing, and key generation.
+
+**Request**:
+```json
+{
+  "action": "encrypt|decrypt|process|generate-key",
+  "data": { ... }
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "encryptedPacket": { ... },
+  "decryptedData": "...",
+  "result": { ... }
+}
+```
+
+### Reasoning API
+
+**Endpoint**: `POST /api/reasoning`
+
+Processes queries through tri-loop ethical reasoning system.
+
+**Request**:
+```json
+{
+  "query": "What is the meaning of life?",
+  "context": {
+    "sessionId": "session-123",
+    "timestamp": 1699999999999
+  }
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "trace": {
+    "queryId": "query_1234567890_abc123",
+    "ethicalRiskScore": 0.2,
+    "riskCategory": "LOW",
+    "riskFactors": [],
+    "strategy": "DIRECT_RESPONSE",
+    "certaintyGain": 0.5,
+    "timePenalty": 500,
+    "computationalCost": 0.2,
+    "ccrr": 1.25,
+    "decision": "PROCEED",
+    "justification": { ... },
+    "improvementPlan": { ... }
+  }
+}
+```
+
+### Agents API
+
+**Endpoint**: `POST /api/agents`
+
+Executes tasks using the agent swarm.
+
+**Request**:
+```json
+{
+  "query": "Analyze market trends for AI",
+  "domain": "Business",
+  "priority": 1
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "result": {
+    "queryId": "task-1234567890",
+    "agentResults": [
+      {
+        "agentId": "business-analyst",
+        "response": "...",
+        "confidence": 0.85,
+        "reasoning": "...",
+        "duration": 1500,
+        "errors": []
+      }
+    ],
+    "synthesizedOutput": "...",
+    "confidence": 0.82
+  }
+}
+```
+
+### Learning API
+
+**Endpoint**: `POST /api/learning`
+
+Manages self-improvement cycles.
+
+**Request**:
+```json
+{
+  "action": "start-cycle|get-status|set-constraint",
+  "constraintLevel": 3.0
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "cycle": {
+    "success": true,
+    "improvements": [],
+    "performanceChange": 0.1,
+    "confidence": 0.85
+  }
+}
+```
+
+---
+
+## 🧩 Modules
+
+### Consciousness Layer
+
+**Location**: `src/lib/consciousness/`
+
+**Components**:
+- `constraints.ts`: Constraint engine with sensory, structural, interpretive, and environmental limits
+- `perception.ts`: Perception layer with input compression and feature extraction
+
+**Purpose**: Model how consciousness emerges from structure interacting with constraint.
+
+### Reasoning Layer
+
+**Location**: `src/lib/reasoning/`
+
+**Components**:
+- `tri-loop.ts`: Tri-loop architecture with ERS, CGS, and CCRR calculations
+
+**Purpose**: Provide transparent, ethical reasoning with quantifiable risk assessment.
+
+### Memory Layer
+
+**Location**: `src/lib/memory/`
+
+**Components**:
+- `knowledge-graph.ts`: Knowledge graph with concept nodes and relationships
+- `consolidation.ts`: Memory consolidation with pruning and merging
+
+**Purpose**: Persistent cross-session knowledge retention with automatic consolidation.
+
+### Agent Swarm Layer
+
+**Location**: `src/lib/agents/`
+
+**Components**:
+- `agent-registry.ts`: Registry of 17 specialized agents
+- `orchestrator.ts`: Agent orchestration with parallel execution and synthesis
+
+**Purpose**: Multi-perspective intelligence with specialized domain experts.
+
+### Security Layer
+
+**Location**: `src/lib/security/`
+
+**Components**:
+- `encryption.ts`: AES-256-GCM and RSA-4096 encryption
+- `binary-units.ts`: Binary processing with 4 unit types
+
+**Purpose**: Zero-knowledge architecture with military-grade encryption.
+
+### Learning Layer
+
+**Location**: `src/lib/learning/`
+
+**Components**:
+- `self-improvement.ts`: Self-improvement cycles with constraint-based filtering
+
+**Purpose**: Autonomous code evolution with safety validation.
+
+---
+
+## 📖 Documentation
+
+For detailed architecture and implementation guides:
+
+- **[OMEGA_MASTER_SYSTEM.md](docs/OMEGA_MASTER_SYSTEM.md)**: Complete architecture documentation
+- **[OMEGA_IMPLEMENTATION_PLAN.md](docs/OMEGA_IMPLEMENTATION_PLAN.md)**: 10-week implementation guide
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+### Development Guidelines
+
+- Use TypeScript for all new code
+- Follow existing code style and structure
+- Add tests for new features
+- Update documentation as needed
+- Ensure all UI components are responsive
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+OMEGA synthesizes best elements from 18 research repositories by Craig Huckerby (craighckby-stack):
+
+- **SPED**: Constraint-based consciousness framework
+- **Huxley**: Ethical reasoning architecture with tri-loop system
+- **DAF**: Developmental AGI Framework with persistent memory
+- **echo-chamber-v7**: Multi-agent orchestration system
+- **z-system**: Zero-knowledge encryption architecture
+- **I.J. Good (1965)**: Self-improvement loop hypothesis
+- **Autonomous-Singularity-System**: Agent swarm architecture
+- **unitary-core**: Quantum data processing concepts
+
+All original work licensed under MIT License.
+
+---
+
+<div align="center">
+
+**Built with ❤️ from collective wisdom of AI research**
+
+**[⬆ Back to top](#omega---omni-model-emergent-general-intelligence-architecture)**
+
+</div>
