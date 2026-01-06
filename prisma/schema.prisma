@@ -228,6 +228,24 @@ model ImprovementCycle {
 }
 
 model CodebaseAnalysis {
+model EncryptionKey {
+  id          String   @id @default(cuid())
+  data        String   @default("")
+  publicKey   String
+  privateKey  String
+  algorithm   String   @default("AES-256-GCM")
+  created     Int
+  expires     Int
+  usage       String
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+  confidence      Float
+  createdAt       DateTime @default(now())
+}
+
+model CodebaseAnalysis {
   id                String   @id @default(cuid())
   cycleId           String
   complexityMetrics  String
