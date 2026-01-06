@@ -1,7 +1,13 @@
 import type { Config } from 'jest';
 import nextJest from 'next/jest';
 
-const config: Config = {
+// FIX: Use nextJest utility to ensure Next.js configuration integration
+const createJestConfig = nextJest({
+  // Provide the path to your Next.js app to load next.config.js and .env files
+  dir: './',
+});
+
+const customJestConfig: Config = {
   preset: 'ts-jest',
   testEnvironment: 'jest-environment-jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
@@ -32,4 +38,5 @@ const config: Config = {
   ],
 };
 
-export default config;
+// Export the configuration wrapped by nextJest
+export default createJestConfig(customJestConfig);
