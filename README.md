@@ -21,6 +21,7 @@ sign up point fullstack to repo and token and let it build or even better you ca
 
 Debugger because I'm lazy.
 Gemini 
-https://gemini.google.com/share/0bb5e52c096e
+
+https://gemini.google.com/share/cff3628bfc67
 
 tbc
