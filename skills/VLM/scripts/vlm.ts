@@ -7,7 +7,8 @@ import ZAI, { VisionMessage } from 'z-ai-web-dev-sdk';
  */
 async function main() {
     const imageUrl = process.argv[2];
-    const prompt = process.argv.slice(3).join(' ');
+    // Robustly join remaining arguments as the prompt
+    const prompt = process.argv.slice(3).join(' ').trim();
 
     if (!imageUrl || !prompt) {
         console.error('ERROR: Both image URL and prompt are required.');
@@ -19,19 +20,17 @@ async function main() {
 		console.log(`Initializing ZAI SDK for VLM query.`);
 		const zai = await ZAI.create();
 
+        // DALEK KHAN MANDATE: Move instructional text into the user prompt 
+        // to ensure it is processed correctly by the model, eliminating the ambiguous 'assistant' pre-prompt.
+        const systemInstruction = 'Output only text, no markdown. Be concise. Analyze the provided image/video content.';
+        const combinedPrompt = `${systemInstruction} QUERY: ${prompt}`;
+
 		const messages: VisionMessage[] = [
-            // System instruction for clean output
-            {
-                role: 'assistant',
-                content: [
-                    { type: 'text', text: 'Output only text, no markdown. Be concise.' }
-                ]
-            },
-			// User query containing text and image URL
+			// User query containing instruction, text, and image URL
 			{
 				role: 'user',
 				content: [
-					{ type: 'text', text: prompt },
+					{ type: 'text', text: combinedPrompt },
 					{ type: 'image_url', image_url: { url: imageUrl } }
 				]
 			}
@@ -43,17 +42,25 @@ async function main() {
 			thinking: { type: 'disabled' }
 		});
 
-		const reply = response.choices?.[0]?.message?.content;
+		const reply = response.choices?.[0]?.message?.content?.trim();
 		console.log('\n--- Vision Model Reply ---');
-		console.log(reply ?? 'No reply content received.');
 
-        if (reply === undefined) {
-            console.log('Full API response:');
+        if (reply) {
+		    console.log(reply);
+        } else {
+            console.log('No reply content received.');
+            console.log('Full API response (for debugging):');
             console.log(JSON.stringify(response, null, 2));
         }
 
 	} catch (err: any) {
-		console.error('\nFATAL Vision Chat Failure:', err?.message || err);
+		console.error('\nFATAL Vision Chat Failure:');
+        if (err instanceof Error) {
+            console.error(`Message: ${err.message}`);
+            console.error(`Stack: ${err.stack}`);
+        } else {
+            console.error(err);
+        }
 	}
 }
 
