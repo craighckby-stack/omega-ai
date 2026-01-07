@@ -53,7 +53,7 @@ const setupRoomListeners = (socket: Socket) => {
  * @param socket The connected socket instance.
  */
 const handleConnection = (socket: Socket) => {
-  // CORRECTION: Replaced mangled UTF-8 characters with correct emoji
+  // FIX: Corrected mangled UTF-8 characters
   console.log(`✅ Client connected: ${socket.id}`); 
 
   // --- Initial Setup ---
@@ -76,7 +76,7 @@ const handleConnection = (socket: Socket) => {
   // --- Disconnection Handling ---
 
   socket.on('disconnect', (reason) => {
-    // CORRECTION: Replaced mangled UTF-8 characters with correct emoji
+    // FIX: Corrected mangled UTF-8 characters
     console.log(`❌ Client disconnected: ${socket.id} (Reason: ${reason})`);
   });
 };
@@ -95,7 +95,7 @@ httpServer.on('error', (err: NodeJS.ErrnoException) => {
 
 // Start the HTTP server listening
 httpServer.listen(PORT, () => {
-  // CORRECTION: Replaced mangled UTF-8 characters with correct emoji
+  // FIX: Corrected mangled UTF-8 characters
   console.log(`🚀 WebSocket service running on port ${PORT} (CORS Origin: ${APP_URL})`); 
   // Initial client count check should be done after the server is ready, but before actual clients connect.
   // io.engine.clientsCount is deprecated. Using io.sockets.sockets.size for accurate count (though 0 at startup).
