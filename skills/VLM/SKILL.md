@@ -1,173 +1,121 @@
----
 name: VLM
 description: Implement vision-based AI chat capabilities using the z-ai-web-dev-sdk. Use this skill when the user needs to analyze images, describe visual content, or create applications that combine image understanding with conversational AI. Supports image URLs and base64 encoded images for multimodal interactions.
 license: MIT
 ---
 
-# VLM(Vision Chat) Skill
+# VLM (Vision Chat) Skill Reference
 
-This skill guides the implementation of vision chat functionality using the z-ai-web-dev-sdk package, enabling AI models to understand and respond to images combined with text prompts.
+This skill guides the implementation of vision chat functionality using the `z-ai-web-dev-sdk`, enabling AI models to understand and respond to images combined with text prompts.
 
-## Skills Path
+## Skill Location
 
-**Skill Location**: `{project_path}/skills/VLM`
+**Path**: `{project_path}/skills/VLM`
 
-this skill is located at above path in your project.
-
-**Reference Scripts**: Example test scripts are available in the `{Skill Location}/scripts/` directory for quick testing and reference. See `{Skill Location}/scripts/vlm.ts` for a working example.
+Reference scripts for testing are available in the `{Skill Location}/scripts/` directory (e.g., `{Skill Location}/scripts/vlm.ts`).
 
 ## Overview
 
-Vision Chat allows you to build applications that can analyze images, extract information from visual content, and answer questions about images through natural language conversation.
+Vision Chat allows you to build applications that analyze images, extract information from visual content, and answer questions about images through natural language conversation.
 
-**IMPORTANT**: z-ai-web-dev-sdk MUST be used in backend code only. Never use it in client-side code.
+**IMPORTANT**: `z-ai-web-dev-sdk` MUST be used in backend code only. Never use it in client-side code.
 
 ## Prerequisites
 
-The z-ai-web-dev-sdk package is already installed. Import it as shown in the examples below.
+The `z-ai-web-dev-sdk` package is already installed. Import it as shown in the examples below.
 
-## CLI Usage (For Simple Tasks)
+## CLI Usage (Simple Tasks)
 
-For simple image analysis tasks, you can use the z-ai CLI instead of writing code. This is ideal for quick image descriptions, testing vision capabilities, or simple automation.
+For simple image analysis tasks, use the `z-ai CLI` for quick descriptions, testing, or simple automation.
 
-### Basic Image Analysis
+### Basic Analysis
 
 ```bash
 # Describe an image from URL
 z-ai vision --prompt "What's in this image?" --image "https://example.com/photo.jpg"
 
-# Using short options
-z-ai vision -p "Describe this image" -i "https://example.com/image.png"
-```
-
-### Analyze Local Images
-
-```bash
-# Analyze a local image file
+# Using short options for local file analysis
 z-ai vision -p "What objects are in this photo?" -i "./photo.jpg"
-
-# Save response to file
-z-ai vision -p "Describe the scene" -i "./landscape.png" -o description.json
 ```
 
-### Multiple Images
+### Advanced Tasks
 
 ```bash
-# Analyze multiple images at once
+# Analyze multiple images
 z-ai vision \
   -p "Compare these two images" \
   -i "./photo1.jpg" \
-  -i "./photo2.jpg" \
-  -o comparison.json
+  -i "./photo2.jpg"
 
-# Multiple images with detailed analysis
+# Enable Chain-of-Thought reasoning
 z-ai vision \
-  --prompt "What are the differences between these images?" \
-  --image "https://example.com/before.jpg" \
-  --image "https://example.com/after.jpg"
-```
-
-### With Thinking (Chain of Thought)
-
-```bash
-# Enable thinking for complex visual reasoning
-z-ai vision \
-  -p "Count the number of people in this image and describe their activities" \
+  -p "Count the people and describe their activities" \
   -i "./crowd.jpg" \
-  --thinking \
-  -o analysis.json
+  --thinking
+
+# Stream output and save to file
+z-ai vision -p "Describe this image in detail" -i "./photo.jpg" --stream -o analysis.json
 ```
 
-### Streaming Output
+### CLI Parameters Summary
 
-```bash
-# Stream the vision analysis
-z-ai vision -p "Describe this image in detail" -i "./photo.jpg" --stream
-```
-
-### CLI Parameters
-
-- `--prompt, -p <text>`: **Required** - Question or instruction about the image(s)
-- `--image, -i <URL or path>`: Optional - Image URL or local file path (can be used multiple times)
-- `--thinking, -t`: Optional - Enable chain-of-thought reasoning (default: disabled)
-- `--output, -o <path>`: Optional - Output file path (JSON format)
-- `--stream`: Optional - Stream the response in real-time
-
-### Supported Image Formats
-
-- PNG (.png)
-- JPEG (.jpg, .jpeg)
-- GIF (.gif)
-- WebP (.webp)
-- BMP (.bmp)
+| Parameter | Alias | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `--prompt` | `-p` | **Yes** | Question or instruction about the image(s) |
+| `--image` | `-i` | Optional | Image URL or local file path (can be used multiple times) |
+| `--thinking` | `-t` | Optional | Enable chain-of-thought reasoning (default: disabled) |
+| `--output` | `-o` | Optional | Output file path (JSON format) |
+| `--stream` | | Optional | Stream the response in real-time |
 
 ### When to Use CLI vs SDK
 
-**Use CLI for:**
-- Quick image analysis
-- Testing vision model capabilities
-- One-off image descriptions
-- Simple automation scripts
+| Use Case | Recommended Tool |
+| :--- | :--- |
+| Quick image analysis / testing | CLI |
+| One-off descriptions or simple scripts | CLI |
+| Multi-turn conversations with visual context | SDK |
+| Dynamic analysis in production applications | SDK |
+| Batch processing with custom logic | SDK |
 
-**Use SDK for:**
-- Multi-turn conversations with images
-- Dynamic image analysis in applications
-- Batch processing with custom logic
-- Production applications with complex workflows
+---
 
 ## Recommended Approach
 
-For better performance and reliability, use base64 encoding to pass images to the model instead of image URLs.
+For optimal performance and reliability, use base64 encoding to transmit image data directly to the model instead of relying on external image URLs.
 
-## Supported Content Types
+## Supported Media Content Types
 
-The Vision Chat API supports three types of media content:
+The Vision Chat API supports combining text prompts with various media types:
 
-### 1. **image_url** - For Image Files
-Use this type for static images (PNG, JPEG, GIF, WebP, etc.)
+### 1. `image_url` (Static Images)
+Use for PNG, JPEG, GIF, WebP, etc.
 ```typescript
-{
-    role: 'user',
-    content: [
-        { type: 'text', text: prompt },
-        { type: 'image_url', image_url: { url: imageUrl } }
-    ]
-}
+{ type: 'image_url', image_url: { url: imageUrl } }
 ```
 
-### 2. **video_url** - For Video Files
-Use this type for video content (MP4, AVI, MOV, etc.)
+### 2. `video_url` (Video Files)
+Use for MP4, AVI, MOV, etc.
 ```typescript
-{
-    role: 'user',
-    content: [
-        { type: 'text', text: prompt },
-        { type: 'video_url', video_url: { url: videoUrl } }
-    ]
-}
+{ type: 'video_url', video_url: { url: videoUrl } }
 ```
 
-### 3. **file_url** - For Document Files
-Use this type for document files (PDF, DOCX, TXT, etc.)
+### 3. `file_url` (Document Files)
+Use for PDF, DOCX, TXT, etc.
 ```typescript
-{
-    role: 'user',
-    content: [
-        { type: 'text', text: prompt },
-        { type: 'file_url', file_url: { url: fileUrl } }
-    ]
-}
+{ type: 'file_url', file_url: { url: fileUrl } }
 ```
 
-**Note**: You can combine multiple content types in a single message. For example, you can include both text and multiple images, or text with both an image and a document.
+**Note**: Multiple content types (e.g., text, multiple images, and a document) can be combined in a single user message.
 
-## Basic Vision Chat Implementation
+## SDK Implementation
 
 ### Single Image Analysis
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
 
+/**
+ * Analyzes a single image URL based on a specific question.
+ */
 async function analyzeImage(imageUrl, question) {
   const zai = await ZAI.create();
 
@@ -176,46 +124,35 @@ async function analyzeImage(imageUrl, question) {
       {
         role: 'user',
         content: [
-          {
-            type: 'text',
-            text: question
-          },
-          {
-            type: 'image_url',
-            image_url: {
-              url: imageUrl
-            }
-          }
+          { type: 'text', text: question },
+          { type: 'image_url', image_url: { url: imageUrl } }
         ]
       }
     ],
-    thinking: { type: 'disabled' }
+    // Generally recommended to disable thinking unless complex reasoning is required
+    thinking: { type: 'disabled' } 
   });
 
   return response.choices[0]?.message?.content;
 }
 
 // Usage
-const result = await analyzeImage(
-  'https://example.com/product.jpg',
-  'Describe this product in detail'
-);
-console.log('Analysis:', result);
+// const result = await analyzeImage('https://example.com/product.jpg', 'Describe this product in detail');
 ```
 
-### Multiple Images Analysis
+### Multiple Images Comparison
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
 
+/**
+ * Compares multiple images based on a user prompt.
+ */
 async function compareImages(imageUrls, question) {
   const zai = await ZAI.create();
 
   const content = [
-    {
-      type: 'text',
-      text: question
-    },
+    { type: 'text', text: question },
     ...imageUrls.map(url => ({
       type: 'image_url',
       image_url: { url }
@@ -223,12 +160,7 @@ async function compareImages(imageUrls, question) {
   ];
 
   const response = await zai.chat.completions.createVision({
-    messages: [
-      {
-        role: 'user',
-        content: content
-      }
-    ],
+    messages: [{ role: 'user', content: content }],
     thinking: { type: 'disabled' }
   });
 
@@ -236,44 +168,37 @@ async function compareImages(imageUrls, question) {
 }
 
 // Usage
-const comparison = await compareImages(
-  [
-    'https://example.com/before.jpg',
-    'https://example.com/after.jpg'
-  ],
-  'Compare these two images and describe the differences'
-);
+// const comparison = await compareImages(['url1', 'url2'], 'Compare the differences');
 ```
 
-### Base64 Image Support
+### Base64 Image Upload (Recommended for Local Files)
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
+import fs from 'fs'; // Requires Node.js filesystem module
 
+/**
+ * Analyzes a local image file by encoding it as base64 data URI.
+ */
 async function analyzeLocalImage(imagePath, question) {
   const zai = await ZAI.create();
 
-  // Read image file and convert to base64
+  // Read file and encode
   const imageBuffer = fs.readFileSync(imagePath);
   const base64Image = imageBuffer.toString('base64');
+  
+  // Basic MIME type detection
   const mimeType = imagePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
+  
+  const dataUri = `data:${mimeType};base64,${base64Image}`;
 
   const response = await zai.chat.completions.createVision({
     messages: [
       {
         role: 'user',
         content: [
-          {
-            type: 'text',
-            text: question
-          },
-          {
-            type: 'image_url',
-            image_url: {
-              url: `data:${mimeType};base64,${base64Image}`
-            }
-          }
+          { type: 'text', text: question },
+          { type: 'image_url', image_url: { url: dataUri } }
         ]
       }
     ],
@@ -286,7 +211,9 @@ async function analyzeLocalImage(imagePath, question) {
 
 ## Advanced Use Cases
 
-### Conversational Vision Chat
+### Conversational Session Management
+
+This class demonstrates maintaining chat history (`this.messages`) for multi-turn conversations where the image context persists.
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
@@ -300,39 +227,7 @@ class VisionChatSession {
     this.zai = await ZAI.create();
   }
 
-  async addImage(imageUrl, initialQuestion) {
-    this.messages.push({
-      role: 'user',
-      content: [
-        {
-          type: 'text',
-          text: initialQuestion
-        },
-        {
-          type: 'image_url',
-          image_url: { url: imageUrl }
-        }
-      ]
-    });
-
-    return this.getResponse();
-  }
-
-  async followUp(question) {
-    this.messages.push({
-      role: 'user',
-      content: [
-        {
-          type: 'text',
-          text: question
-        }
-      ]
-    });
-
-    return this.getResponse();
-  }
-
-  async getResponse() {
+  async processRequest() {
     const response = await this.zai.chat.completions.createVision({
       messages: this.messages,
       thinking: { type: 'disabled' }
@@ -340,30 +235,42 @@ class VisionChatSession {
 
     const assistantMessage = response.choices[0]?.message?.content;
     
-    this.messages.push({
-      role: 'assistant',
-      content: assistantMessage
-    });
+    // Store assistant response for context
+    this.messages.push({ role: 'assistant', content: assistantMessage });
 
     return assistantMessage;
   }
+  
+  async addImage(imageUrl, initialQuestion) {
+    this.messages.push({
+      role: 'user',
+      content: [
+        { type: 'text', text: initialQuestion },
+        { type: 'image_url', image_url: { url: imageUrl } }
+      ]
+    });
+    return this.processRequest();
+  }
+
+  async followUp(question) {
+    this.messages.push({
+      role: 'user',
+      content: [{ type: 'text', text: question }]
+    });
+    return this.processRequest();
+  }
 }
 
-// Usage
-const session = new VisionChatSession();
-await session.initialize();
-
-const initial = await session.addImage(
-  'https://example.com/chart.jpg',
-  'What does this chart show?'
-);
-console.log('Initial analysis:', initial);
-
-const followup = await session.followUp('What are the key trends?');
-console.log('Follow-up:', followup);
+// Usage:
+// const session = new VisionChatSession();
+// await session.initialize();
+// const initial = await session.addImage('url/chart.jpg', 'What does this chart show?');
+// const followup = await session.followUp('What are the key trends?');
 ```
 
-### Image Classification and Tagging
+### Image Classification and Structured Tagging
+
+Prompting the model to return structured data (JSON) for easy consumption.
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
@@ -371,27 +278,15 @@ import ZAI from 'z-ai-web-dev-sdk';
 async function classifyImage(imageUrl) {
   const zai = await ZAI.create();
 
-  const prompt = `Analyze this image and provide:
-1. Main subject/category
-2. Key objects detected
-3. Scene description
-4. Suggested tags (comma-separated)
-
-Format your response as JSON.`;
+  const prompt = `Analyze this image and provide: 1. Main category 2. Key objects detected 3. Scene description 4. Suggested tags (comma-separated). Format your response strictly as JSON.`;
 
   const response = await zai.chat.completions.createVision({
     messages: [
       {
         role: 'user',
         content: [
-          {
-            type: 'text',
-            text: prompt
-          },
-          {
-            type: 'image_url',
-            image_url: { url: imageUrl }
-          }
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: imageUrl } }
         ]
       }
     ],
@@ -403,6 +298,7 @@ Format your response as JSON.`;
   try {
     return JSON.parse(content);
   } catch (e) {
+    console.error("Failed to parse JSON response:", content);
     return { rawResponse: content };
   }
 }
@@ -441,22 +337,21 @@ async function extractText(imageUrl) {
 
 ## Best Practices
 
-### 1. Image Quality and Size
-- Use high-quality images for better analysis results
-- Optimize image size to balance quality and processing speed
-- Supported formats: JPEG, PNG, WebP
+### 1. Prompt Engineering
+- Be specific about required output (e.g., "List", "Compare", "Format as JSON").
+- Provide necessary context (e.g., "This is a financial chart", "This is a handwritten receipt").
 
-### 2. Prompt Engineering
-- Be specific about what information you need from the image
-- Structure complex requests with numbered lists or bullet points
-- Provide context about the image type (photo, diagram, chart, etc.)
+### 2. Performance and Quality
+- Use high-quality images.
+- Optimize image size to balance quality and speed.
+- Use base64 encoding for reliability and speed when possible.
 
-### 3. Error Handling
+### 3. Error Handling Example
+
 ```javascript
 async function safeVisionChat(imageUrl, question) {
   try {
     const zai = await ZAI.create();
-    
     const response = await zai.chat.completions.createVision({
       messages: [
         {
@@ -470,44 +365,22 @@ async function safeVisionChat(imageUrl, question) {
       thinking: { type: 'disabled' }
     });
 
-    return {
-      success: true,
-      content: response.choices[0]?.message?.content
-    };
+    return { success: true, content: response.choices[0]?.message?.content };
   } catch (error) {
-    console.error('Vision chat error:', error);
-    return {
-      success: false,
-      error: error.message
-    };
+    console.error('Vision chat error:', error.message);
+    return { success: false, error: error.message };
   }
 }
 ```
 
-### 4. Performance Optimization
-- Cache SDK instance creation when processing multiple images
-- Use appropriate image formats (JPEG for photos, PNG for diagrams)
-- Consider image preprocessing for large batches
+### 4. Security
+- Validate and sanitize all user-provided data (URLs, images).
+- Implement rate limiting for public-facing APIs.
+- **NEVER** expose SDK credentials in client-side code.
 
-### 5. Security Considerations
-- Validate image URLs before processing
-- Sanitize user-provided image data
-- Implement rate limiting for public-facing APIs
-- Never expose SDK credentials in client-side code
+## Integration Example: Express.js API
 
-## Common Use Cases
-
-1. **Product Analysis**: Analyze product images for e-commerce applications
-2. **Document Understanding**: Extract information from receipts, invoices, forms
-3. **Medical Imaging**: Assist in preliminary analysis (with appropriate disclaimers)
-4. **Quality Control**: Detect defects or anomalies in manufacturing
-5. **Content Moderation**: Analyze images for policy compliance
-6. **Accessibility**: Generate alt text for images automatically
-7. **Visual Search**: Understand and categorize images for search functionality
-
-## Integration Examples
-
-### Express.js API Endpoint
+This example shows how to initialize and cache the SDK instance for high-performance server-side processing.
 
 ```javascript
 import express from 'express';
@@ -518,19 +391,22 @@ app.use(express.json());
 
 let zaiInstance;
 
-// Initialize SDK once
+// Initialize SDK once globally for efficiency
 async function initZAI() {
   zaiInstance = await ZAI.create();
+  console.log('ZAI SDK Initialized.');
 }
 
 app.post('/api/analyze-image', async (req, res) => {
+  if (!zaiInstance) {
+    return res.status(503).json({ error: 'Server initializing ZAI SDK' });
+  }
+
   try {
     const { imageUrl, question } = req.body;
 
     if (!imageUrl || !question) {
-      return res.status(400).json({ 
-        error: 'imageUrl and question are required' 
-      });
+      return res.status(400).json({ error: 'imageUrl and question are required' });
     }
 
     const response = await zaiInstance.chat.completions.createVision({
@@ -551,10 +427,8 @@ app.post('/api/analyze-image', async (req, res) => {
       analysis: response.choices[0]?.message?.content
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    console.error('API Error:', error.message);
+    res.status(500).json({ success: false, error: 'Internal Server Error during analysis.' });
   }
 });
 
@@ -562,27 +436,7 @@ initZAI().then(() => {
   app.listen(3000, () => {
     console.log('Vision chat API running on port 3000');
   });
+}).catch(err => {
+  console.error('Failed to initialize ZAI SDK:', err);
+  process.exit(1);
 });
-```
-
-## Troubleshooting
-
-**Issue**: "SDK must be used in backend"
-- **Solution**: Ensure z-ai-web-dev-sdk is only imported and used in server-side code
-
-**Issue**: Image not loading or being analyzed
-- **Solution**: Verify the image URL is accessible and returns a valid image format
-
-**Issue**: Poor analysis quality
-- **Solution**: Provide more specific prompts and ensure image quality is sufficient
-
-**Issue**: Slow response times
-- **Solution**: Optimize image size and consider caching frequently analyzed images
-
-## Remember
-
-- Always use z-ai-web-dev-sdk in backend code only
-- The SDK is already installed - import as shown in examples
-- Structure prompts clearly for best results
-- Handle errors gracefully in production applications
-- Consider user privacy when processing images
