@@ -1,19 +1,14 @@
 :81 {
-	@transform_port_query {
-		query XTransformPort=*
-	}
+	@dynamic_port query XTransformPort=*
 
-	handle @transform_port_query {
-		reverse_proxy localhost:{query.XTransformPort} {
-			header_up Host {host}
-			header_up X-Forwarded-For {remote_host}
-			header_up X-Forwarded-Proto {scheme}
-			header_up X-Real-IP {remote_host}
+	route {
+		vars.up_port = 3000
+
+		if @dynamic_port {
+			vars.up_port = {query.XTransformPort}
 		}
-	}
 
-	handle {
-		reverse_proxy localhost:3000 {
+		reverse_proxy localhost:{vars.up_port} {
 			header_up Host {host}
 			header_up X-Forwarded-For {remote_host}
 			header_up X-Forwarded-Proto {scheme}
