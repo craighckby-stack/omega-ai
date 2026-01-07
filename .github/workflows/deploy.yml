@@ -3,40 +3,56 @@ name: Deploy
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
   workflow_dispatch:
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Setup Bun
       uses: oven-sh/setup-bun@v1
       with:
-        bun-version: latest
+        bun-version: 1.1.x # Use specific major version or range
+
+    - name: Cache dependencies
+      id: cache-bun
+      uses: actions/cache@v4
+      with:
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
 
     - name: Install dependencies
-      run: bun install
-
-    - name: Run database migrations
-      run: bun run db:push
+      run: bun install --frozen-lockfile
 
     - name: Build application
       run: bun run build
       env:
         NODE_ENV: production
 
+    - name: Run database migrations
+      run: bun run db:push
+
     - name: Deploy to production
-      # Add your deployment steps here
       run: |
         echo "Deploying OMEGA to production..."
-        # Example: Add SSH deployment, Vercel deployment, etc.
+        # Add your actual deployment logic here (e.g., using a specific deployment tool or SSH)
         echo "Deployment complete!"
 
     - name: Notify deployment
+      if: always()
       run: |
-        echo "OMEGA v${{ github.event.repository.push.after }} deployed successfully!"
+        echo "OMEGA deployed successfully! Commit SHA: ${{ github.sha }}"
