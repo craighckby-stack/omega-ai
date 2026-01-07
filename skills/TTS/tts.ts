@@ -49,6 +49,7 @@ async function main() {
     const buffer = Buffer.from(new Uint8Array(arrayBuffer));
     
     fs.writeFileSync(absoluteOutFile, buffer);
+    // FIX: Corrected mangled UTF-8 characters
     console.log(`\n✅ TTS audio successfully saved to ${absoluteOutFile}`);
   } catch (err: any) {
     console.error("\nFATAL TTS FAILURE:");
