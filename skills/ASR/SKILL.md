@@ -1,4 +1,3 @@
----
 name: ASR
 description: Implement speech-to-text (ASR/automatic speech recognition) capabilities using the z-ai-web-dev-sdk. Use this skill when the user needs to transcribe audio files, convert speech to text, build voice input features, or process audio recordings. Supports base64 encoded audio files and returns accurate text transcriptions.
 license: MIT
@@ -6,89 +5,62 @@ license: MIT
 
 # ASR (Speech to Text) Skill
 
-This skill guides the implementation of speech-to-text (ASR) functionality using the z-ai-web-dev-sdk package, enabling accurate transcription of spoken audio into text.
+This skill documents the implementation of Speech-to-Text (ASR) functionality using the `z-ai-web-dev-sdk` for accurate audio transcription.
 
-## Skills Path
+## Skill Location
 
-**Skill Location**: `{project_path}/skills/ASR`
+**Path**: `{project_path}/skills/ASR`
 
-this skill is located at above path in your project.
-
-**Reference Scripts**: Example test scripts are available in the `{Skill Location}/scripts/` directory for quick testing and reference. See `{Skill Location}/scripts/asr.ts` for a working example.
+Reference scripts for testing are available in the `{Skill Location}/scripts/` directory (e.g., `{Skill Location}/scripts/asr.ts`).
 
 ## Overview
 
-Speech-to-Text (ASR - Automatic Speech Recognition) allows you to build applications that convert spoken language in audio files into written text, enabling voice-controlled interfaces, transcription services, and audio content analysis.
+ASR (Automatic Speech Recognition) converts spoken language within audio files into written text, facilitating voice interfaces, transcription services, and audio content analysis.
 
-**IMPORTANT**: z-ai-web-dev-sdk MUST be used in backend code only. Never use it in client-side code.
+**IMPORTANT**: The `z-ai-web-dev-sdk` MUST be used exclusively in backend code.
 
 ## Prerequisites
 
-The z-ai-web-dev-sdk package is already installed. Import it as shown in the examples below.
+The `z-ai-web-dev-sdk` package is assumed to be installed and ready for import.
 
-## CLI Usage (For Simple Tasks)
+## CLI Usage (Quick Transcription)
 
-For simple audio transcription tasks, you can use the z-ai CLI instead of writing code. This is ideal for quick transcriptions, testing audio files, or batch processing.
+For simple, one-off, or batch transcription tasks, the `z-ai` CLI provides a faster alternative to writing custom code.
 
-### Basic Transcription from File
+### Basic Transcription
 
 ```bash
-# Transcribe an audio file
+# Transcribe an audio file and print to console
 z-ai asr --file ./audio.wav
 
-# Save transcription to JSON file
+# Transcribe and save output to JSON
 z-ai asr -f ./recording.mp3 -o transcript.json
-
-# Transcribe and view output
-z-ai asr --file ./interview.wav --output result.json
 ```
 
-### Transcription from Base64
+### Base64 Transcription
 
 ```bash
-# Transcribe from base64 encoded audio
+# Transcribe from a base64 encoded audio string
 z-ai asr --base64 "UklGRiQAAABXQVZFZm10..." -o result.json
-
-# Using short option
-z-ai asr -b "base64_encoded_audio_data" -o transcript.json
 ```
 
 ### Streaming Output
 
 ```bash
-# Stream transcription results
-z-ai asr -f ./audio.wav --stream
+# Stream partial transcription results as they are recognized
+z-ai asr -f ./long_audio.wav --stream
 ```
 
 ### CLI Parameters
 
-- `--file, -f <path>`: **Required** (if not using --base64) - Audio file path
-- `--base64, -b <base64>`: **Required** (if not using --file) - Base64 encoded audio
-- `--output, -o <path>`: Optional - Output file path (JSON format)
-- `--stream`: Optional - Stream the transcription output
+- `--file, -f <path>`: Input audio file path.
+- `--base64, -b <base64>`: Base64 encoded audio data.
+- `--output, -o <path>`: Optional path to save the transcription (JSON format).
+- `--stream`: Optional flag to enable streaming transcription output.
 
-### Supported Audio Formats
+## Basic SDK Implementation
 
-The ASR service supports various audio formats including:
-- WAV (.wav)
-- MP3 (.mp3)
-- Other common audio formats
-
-### When to Use CLI vs SDK
-
-**Use CLI for:**
-- Quick audio file transcriptions
-- Testing audio recognition accuracy
-- Simple batch processing scripts
-- One-off transcription tasks
-
-**Use SDK for:**
-- Real-time audio transcription in applications
-- Integration with recording systems
-- Custom audio processing workflows
-- Production applications with streaming audio
-
-## Basic ASR Implementation
+The SDK handles audio transcription by receiving the audio file encoded in Base64 format.
 
 ### Simple Audio Transcription
 
@@ -99,9 +71,8 @@ import fs from 'fs';
 async function transcribeAudio(audioFilePath) {
   const zai = await ZAI.create();
 
-  // Read audio file and convert to base64
-  const audioFile = fs.readFileSync(audioFilePath);
-  const base64Audio = audioFile.toString('base64');
+  const audioBuffer = fs.readFileSync(audioFilePath);
+  const base64Audio = audioBuffer.toString('base64');
 
   const response = await zai.audio.asr.create({
     file_base64: base64Audio
@@ -110,12 +81,12 @@ async function transcribeAudio(audioFilePath) {
   return response.text;
 }
 
-// Usage
-const transcription = await transcribeAudio('./audio.wav');
-console.log('Transcription:', transcription);
+// Usage Example
+// const transcription = await transcribeAudio('./audio.wav');
+// console.log('Transcription:', transcription);
 ```
 
-### Transcribe Multiple Audio Files
+### Transcribe Multiple Audio Files (Batch Processing)
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
@@ -127,8 +98,8 @@ async function transcribeBatch(audioFilePaths) {
 
   for (const filePath of audioFilePaths) {
     try {
-      const audioFile = fs.readFileSync(filePath);
-      const base64Audio = audioFile.toString('base64');
+      const audioBuffer = fs.readFileSync(filePath);
+      const base64Audio = audioBuffer.toString('base64');
 
       const response = await zai.audio.asr.create({
         file_base64: base64Audio
@@ -147,26 +118,20 @@ async function transcribeBatch(audioFilePaths) {
       });
     }
   }
-
   return results;
 }
 
-// Usage
-const files = ['./interview1.wav', './interview2.wav', './interview3.wav'];
-const transcriptions = await transcribeBatch(files);
-
-transcriptions.forEach(result => {
-  if (result.success) {
-    console.log(`${result.file}: ${result.transcription}`);
-  } else {
-    console.error(`${result.file}: Error - ${result.error}`);
-  }
-});
+// Usage Example
+// const files = ['./1.wav', './2.mp3'];
+// const transcriptions = await transcribeBatch(files);
+// transcriptions.forEach(result => console.log(`${result.file}: ${result.success ? result.transcription : result.error}`));
 ```
 
 ## Advanced Use Cases
 
 ### Audio File Processing with Metadata
+
+This example extracts transcription, file details, and processing metrics.
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
@@ -176,10 +141,9 @@ import path from 'path';
 async function transcribeWithMetadata(audioFilePath) {
   const zai = await ZAI.create();
 
-  // Get file metadata
   const stats = fs.statSync(audioFilePath);
-  const audioFile = fs.readFileSync(audioFilePath);
-  const base64Audio = audioFile.toString('base64');
+  const audioBuffer = fs.readFileSync(audioFilePath);
+  const base64Audio = audioBuffer.toString('base64');
 
   const startTime = Date.now();
 
@@ -188,28 +152,27 @@ async function transcribeWithMetadata(audioFilePath) {
   });
 
   const endTime = Date.now();
+  const text = response.text || '';
 
   return {
     filename: path.basename(audioFilePath),
-    filepath: audioFilePath,
     fileSize: stats.size,
-    transcription: response.text,
-    wordCount: response.text.split(/\s+/).length,
-    processingTime: endTime - startTime,
+    transcription: text,
+    wordCount: text.split(/\s+/).filter(Boolean).length,
+    processingTimeMs: endTime - startTime,
     timestamp: new Date().toISOString()
   };
 }
-
-// Usage
-const result = await transcribeWithMetadata('./meeting_recording.wav');
-console.log('Transcription Details:', JSON.stringify(result, null, 2));
 ```
 
-### Real-time Audio Processing Service
+### Real-time Audio Processing Service with Caching
+
+Using a class structure to initialize the SDK once and implement caching for repeated requests.
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
 import fs from 'fs';
+import crypto from 'crypto';
 
 class ASRService {
   constructor() {
@@ -222,7 +185,6 @@ class ASRService {
   }
 
   generateCacheKey(audioBuffer) {
-    const crypto = require('crypto');
     return crypto.createHash('md5').update(audioBuffer).digest('hex');
   }
 
@@ -230,53 +192,33 @@ class ASRService {
     const audioBuffer = fs.readFileSync(audioFilePath);
     const cacheKey = this.generateCacheKey(audioBuffer);
 
-    // Check cache
     if (useCache && this.transcriptionCache.has(cacheKey)) {
-      return {
-        transcription: this.transcriptionCache.get(cacheKey),
-        cached: true
-      };
+      return { transcription: this.transcriptionCache.get(cacheKey), cached: true };
     }
 
-    // Transcribe audio
     const base64Audio = audioBuffer.toString('base64');
 
     const response = await this.zai.audio.asr.create({
       file_base64: base64Audio
     });
+    
+    const transcription = response.text;
 
-    // Cache result
     if (useCache) {
-      this.transcriptionCache.set(cacheKey, response.text);
+      this.transcriptionCache.set(cacheKey, transcription);
     }
 
-    return {
-      transcription: response.text,
-      cached: false
-    };
-  }
-
-  clearCache() {
-    this.transcriptionCache.clear();
-  }
-
-  getCacheSize() {
-    return this.transcriptionCache.size;
+    return { transcription, cached: false };
   }
 }
 
 // Usage
-const asrService = new ASRService();
-await asrService.initialize();
-
-const result1 = await asrService.transcribe('./audio.wav');
-console.log('First call (not cached):', result1);
-
-const result2 = await asrService.transcribe('./audio.wav');
-console.log('Second call (cached):', result2);
+// const asrService = new ASRService();
+// await asrService.initialize();
+// const result1 = await asrService.transcribe('./audio.wav');
 ```
 
-### Directory Transcription
+### Directory Transcription and Result Aggregation
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
@@ -286,11 +228,9 @@ import path from 'path';
 async function transcribeDirectory(directoryPath, outputJsonPath) {
   const zai = await ZAI.create();
 
-  // Get all audio files
+  const supportedFormats = /\.(wav|mp3|m4a|flac|ogg)$/i;
   const files = fs.readdirSync(directoryPath);
-  const audioFiles = files.filter(file => 
-    /\.(wav|mp3|m4a|flac|ogg)$/i.test(file)
-  );
+  const audioFiles = files.filter(file => supportedFormats.test(file));
 
   const results = {
     directory: directoryPath,
@@ -303,21 +243,23 @@ async function transcribeDirectory(directoryPath, outputJsonPath) {
     const filePath = path.join(directoryPath, filename);
 
     try {
-      const audioFile = fs.readFileSync(filePath);
-      const base64Audio = audioFile.toString('base64');
+      const audioBuffer = fs.readFileSync(filePath);
+      const base64Audio = audioBuffer.toString('base64');
 
       const response = await zai.audio.asr.create({
         file_base64: base64Audio
       });
+      
+      const text = response.text || '';
 
       results.transcriptions.push({
         filename: filename,
         success: true,
-        text: response.text,
-        wordCount: response.text.split(/\s+/).length
+        text: text,
+        wordCount: text.split(/\s+/).filter(Boolean).length
       });
 
-      console.log(`✓ Transcribed: ${filename}`);
+      console.log(`[OK] Transcribed: ${filename}`);
     } catch (error) {
       results.transcriptions.push({
         filename: filename,
@@ -325,60 +267,20 @@ async function transcribeDirectory(directoryPath, outputJsonPath) {
         error: error.message
       });
 
-      console.error(`✗ Failed: ${filename} - ${error.message}`);
+      console.error(`[FAIL] Failed: ${filename} - ${error.message}`);
     }
   }
 
-  // Save results to JSON
-  fs.writeFileSync(
-    outputJsonPath,
-    JSON.stringify(results, null, 2)
-  );
-
+  fs.writeFileSync(outputJsonPath, JSON.stringify(results, null, 2));
   return results;
 }
-
-// Usage
-const results = await transcribeDirectory(
-  './audio-recordings',
-  './transcriptions.json'
-);
-
-console.log(`\nProcessed ${results.totalFiles} files`);
-console.log(`Successful: ${results.transcriptions.filter(t => t.success).length}`);
-console.log(`Failed: ${results.transcriptions.filter(t => !t.success).length}`);
 ```
 
 ## Best Practices
 
-### 1. Audio Format Handling
+### 1. Robust Error Handling and Pre-checks
 
-```javascript
-import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs';
-
-async function transcribeAnyFormat(audioFilePath) {
-  // Supported formats: WAV, MP3, M4A, FLAC, OGG, etc.
-  const validExtensions = ['.wav', '.mp3', '.m4a', '.flac', '.ogg'];
-  const ext = audioFilePath.toLowerCase().substring(audioFilePath.lastIndexOf('.'));
-
-  if (!validExtensions.includes(ext)) {
-    throw new Error(`Unsupported audio format: ${ext}`);
-  }
-
-  const zai = await ZAI.create();
-  const audioFile = fs.readFileSync(audioFilePath);
-  const base64Audio = audioFile.toString('base64');
-
-  const response = await zai.audio.asr.create({
-    file_base64: base64Audio
-  });
-
-  return response.text;
-}
-```
-
-### 2. Error Handling
+Implement checks for file existence and size limits before sending data to the API.
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
@@ -386,7 +288,6 @@ import fs from 'fs';
 
 async function safeTranscribe(audioFilePath) {
   try {
-    // Validate file exists
     if (!fs.existsSync(audioFilePath)) {
       throw new Error(`File not found: ${audioFilePath}`);
     }
@@ -399,85 +300,52 @@ async function safeTranscribe(audioFilePath) {
       throw new Error(`File too large: ${fileSizeMB.toFixed(2)}MB (max 100MB)`);
     }
 
-    // Transcribe
     const zai = await ZAI.create();
-    const audioFile = fs.readFileSync(audioFilePath);
-    const base64Audio = audioFile.toString('base64');
+    const audioBuffer = fs.readFileSync(audioFilePath);
+    const base64Audio = audioBuffer.toString('base64');
 
     const response = await zai.audio.asr.create({
       file_base64: base64Audio
     });
-
+    
     if (!response.text || response.text.trim().length === 0) {
       throw new Error('Empty transcription result');
     }
 
-    return {
-      success: true,
-      transcription: response.text,
-      filePath: audioFilePath,
-      fileSize: stats.size
-    };
+    return { success: true, transcription: response.text, filePath: audioFilePath };
   } catch (error) {
-    console.error('Transcription error:', error);
-    return {
-      success: false,
-      error: error.message,
-      filePath: audioFilePath
-    };
+    console.error(`Transcription failed for ${audioFilePath}:`, error.message);
+    return { success: false, error: error.message, filePath: audioFilePath };
   }
 }
 ```
 
-### 3. Post-Processing Transcriptions
+### 2. Post-Processing Transcriptions
+
+Cleaning up raw ASR output improves readability and usability.
 
 ```javascript
 function cleanTranscription(text) {
+  if (!text) return '';
+  
   // Remove excessive whitespace
   text = text.replace(/\s+/g, ' ').trim();
 
   // Capitalize first letter of sentences
-  text = text.replace(/(^\w|[.!?]\s+\w)/g, match => match.toUpperCase());
+  text = text.replace(/(^\w|[.!?]\s*\w)/g, match => match.toUpperCase());
 
-  // Remove filler words (optional)
-  const fillers = ['um', 'uh', 'ah', 'like', 'you know'];
+  // Simple removal of common filler words (optional)
+  const fillers = ['um', 'uh', 'ah', 'like', 'you know', 'gonna', 'kinda'];
   const fillerPattern = new RegExp(`\\b(${fillers.join('|')})\\b`, 'gi');
   text = text.replace(fillerPattern, '').replace(/\s+/g, ' ');
 
-  return text;
-}
-
-async function transcribeAndClean(audioFilePath) {
-  const zai = await ZAI.create();
-  
-  const audioFile = fs.readFileSync(audioFilePath);
-  const base64Audio = audioFile.toString('base64');
-
-  const response = await zai.audio.asr.create({
-    file_base64: base64Audio
-  });
-
-  return {
-    raw: response.text,
-    cleaned: cleanTranscription(response.text)
-  };
+  return text.trim();
 }
 ```
 
-## Common Use Cases
+## Integration Example: Express API
 
-1. **Meeting Transcription**: Convert recorded meetings into searchable text
-2. **Interview Processing**: Transcribe interviews for analysis and documentation
-3. **Podcast Transcription**: Create text versions of podcast episodes
-4. **Voice Notes**: Convert voice memos to text for easier reference
-5. **Call Center Analytics**: Analyze customer service calls
-6. **Accessibility**: Provide text alternatives for audio content
-7. **Voice Commands**: Enable voice-controlled applications
-8. **Language Learning**: Transcribe pronunciation practice
-
-## Integration Examples
-
-### Express.js API Endpoint
+Example of handling file uploads via an HTTP endpoint and performing transcription.
 
 ```javascript
 import express from 'express';
@@ -486,7 +354,9 @@ import ZAI from 'z-ai-web-dev-sdk';
 import fs from 'fs';
 
 const app = express();
-const upload = multer({ dest: 'uploads/' });
+// Use memory storage to avoid writing large files to disk unnecessarily,
+// or use disk storage and ensure proper cleanup.
+const upload = multer({ dest: 'uploads/' }); 
 
 let zaiInstance;
 
@@ -495,36 +365,35 @@ async function initZAI() {
 }
 
 app.post('/api/transcribe', upload.single('audio'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No audio file provided' });
-    }
+  if (!req.file) {
+    return res.status(400).json({ error: 'No audio file provided' });
+  }
 
-    const audioFile = fs.readFileSync(req.file.path);
-    const base64Audio = audioFile.toString('base64');
+  const filePath = req.file.path;
+  
+  try {
+    const audioBuffer = fs.readFileSync(filePath);
+    const base64Audio = audioBuffer.toString('base64');
 
     const response = await zaiInstance.audio.asr.create({
       file_base64: base64Audio
     });
 
-    // Clean up uploaded file
-    fs.unlinkSync(req.file.path);
+    const transcription = response.text;
 
     res.json({
       success: true,
-      transcription: response.text,
-      wordCount: response.text.split(/\s+/).length
+      transcription: transcription,
+      wordCount: transcription.split(/\s+/).filter(Boolean).length
     });
   } catch (error) {
-    // Clean up on error
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+    console.error('Transcription API Error:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  } finally {
+    // Crucial: Clean up the temporary file
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
     }
-
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
   }
 });
 
@@ -535,46 +404,18 @@ initZAI().then(() => {
 });
 ```
 
-## Troubleshooting
-
-**Issue**: "SDK must be used in backend"
-- **Solution**: Ensure z-ai-web-dev-sdk is only imported in server-side code
-
-**Issue**: Empty or incorrect transcription
-- **Solution**: Verify audio quality and format. Check if audio contains clear speech
-
-**Issue**: Large file processing fails
-- **Solution**: Consider splitting large audio files into smaller segments
-
-**Issue**: Slow transcription speed
-- **Solution**: Implement caching for repeated transcriptions, optimize file sizes
-
-**Issue**: Memory errors with large files
-- **Solution**: Process files in chunks or increase Node.js memory limit
-
 ## Performance Tips
 
-1. **Reuse SDK Instance**: Create once, use multiple times
-2. **Implement Caching**: Cache transcriptions for duplicate files
-3. **Batch Processing**: Process multiple files efficiently with proper queuing
-4. **Audio Optimization**: Compress audio files before processing when possible
-5. **Async Operations**: Use Promise.all for parallel processing when appropriate
+1. **SDK Initialization**: Create the `ZAI` instance once and reuse it globally (as shown in `ASRService` and Express examples).
+2. **Caching**: Utilize a caching layer (e.g., in-memory or Redis) for frequently requested audio files.
+3. **File Optimization**: Ensure input audio files are appropriately sampled (16kHz recommended) and compressed where quality loss is acceptable.
+4. **Asynchronous Operations**: Use `Promise.all` for parallel processing of independent files in batch jobs.
 
-## Audio Quality Guidelines
+## Troubleshooting
 
-For best transcription results:
-- **Sample Rate**: 16kHz or higher
-- **Format**: WAV, MP3, or M4A recommended
-- **Noise Level**: Minimize background noise
-- **Speech Clarity**: Clear pronunciation and normal speaking pace
-- **File Size**: Under 100MB recommended for individual files
-
-## Remember
-
-- Always use z-ai-web-dev-sdk in backend code only
-- The SDK is already installed - import as shown in examples
-- Audio files must be converted to base64 before processing
-- Implement proper error handling for production applications
-- Consider audio quality for best transcription accuracy
-- Clean up temporary files after processing
-- Cache results for frequently transcribed files
+| Issue | Solution |
+| :--- | :--- |
+| SDK usage in frontend | Ensure `z-ai-web-dev-sdk` is imported only in server-side/backend code. |
+| Empty or poor transcription | Verify audio quality (clear speech, minimal noise) and file format compatibility. |
+| Large file processing failure | Split audio files into segments or increase memory allocation for the processing environment. |
+| Slow performance | Implement caching and reuse the SDK instance. Check network latency. |
