@@ -23,6 +23,9 @@ model ConstraintProfile {
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([constraintType, active])
+  @@index([name])
 }
 
 model InternalState {
@@ -33,6 +36,8 @@ model InternalState {
   attentionWeights String
   activationLevels String
   createdAt       DateTime @default(now())
+
+  @@index([cycle])
 }
 
 model EmergenceSignal {
@@ -41,6 +46,8 @@ model EmergenceSignal {
   strength    Float
   metadata    String
   timestamp   DateTime @default(now())
+
+  @@index([signalType, timestamp])
 }
 
 // ========================================
@@ -70,6 +77,10 @@ model ReasoningTrace {
   improvementPlan   String?
 
   createdAt         DateTime @default(now())
+
+  @@index([queryId])
+  @@index([userId])
+  @@index([ethicalRiskScore])
 }
 
 model ImprovementPlan {
@@ -80,6 +91,9 @@ model ImprovementPlan {
   timeline    String
   status      String   @default("PENDING")
   createdAt   DateTime @default(now())
+
+  @@index([traceId])
+  @@index([status, priority])
 }
 
 // ========================================
@@ -100,6 +114,9 @@ model Concept {
   contradictionCount    Int      @default(0)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+
+  @@index([confidence])
+  @@index([lastSeen])
 }
 
 model Experience {
@@ -109,6 +126,8 @@ model Experience {
   metadata    String
   rawContext  String   
   timestamp   DateTime @default(now())
+
+  @@index([timestamp])
 }
 
 model ConsolidationTask {
@@ -119,6 +138,8 @@ model ConsolidationTask {
   status      String   @default("PENDING")
   timestamp   DateTime @default(now())
   createdAt   DateTime @default(now())
+
+  @@index([status, priority])
 }
 
 // ========================================
@@ -136,6 +157,9 @@ model Agent {
   metrics         String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([domain])
+  @@index([status])
 }
 
 model AgentTask {
@@ -149,6 +173,9 @@ model AgentTask {
   duration        Int
   errors          String
   createdAt       DateTime @default(now())
+
+  @@index([agentId, taskId])
+  @@index([createdAt])
 }
 
 model SynthesisResult {
@@ -158,6 +185,8 @@ model SynthesisResult {
   synthesizedOutput String   
   confidence      Float
   createdAt       DateTime @default(now())
+
+  @@index([queryId])
 }
 
 // ========================================
@@ -173,6 +202,8 @@ model BinaryUnit {
   metrics     String
   createdAt   DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([unitType, status])
 }
 
 model DataPacket {
@@ -186,6 +217,9 @@ model DataPacket {
   processed   Boolean  @default(false)
   createdAt   DateTime @default(now())
   processedAt DateTime?
+
+  @@index([source, packetType])
+  @@index([processed, createdAt])
 }
 
 model EncryptionKey {
@@ -198,6 +232,8 @@ model EncryptionKey {
   usage       String
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
+
+  @@index([usage, active])
 }
 
 model EncryptedPacket {
@@ -208,6 +244,9 @@ model EncryptedPacket {
   keyId       String
   timestamp   Int
   createdAt   DateTime @default(now())
+
+  @@index([keyId])
+  @@index([timestamp])
 }
 
 // ========================================
@@ -224,6 +263,8 @@ model ImprovementCycle {
   performanceChange Float
   confidence      Float
   createdAt       DateTime @default(now())
+
+  @@index([success])
 }
 
 model CodebaseAnalysis {
@@ -235,4 +276,7 @@ model CodebaseAnalysis {
   testCoverage      Float
   securityIssues    String
   createdAt        DateTime @default(now())
+
+  @@index([cycleId])
 }
+// END OF SCHEMA OPTIMIZATION
