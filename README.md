@@ -7,6 +7,9 @@ this repo current scfold for auto Gemini preview.
 2
 https://gemini.google.com/share/c0dd4a3ef852
 
+new 
+
+https://gemini.google.com/share/d31eabdb0e5b
 
 idea. take as many stupid ai ideas build them half assed 
 
