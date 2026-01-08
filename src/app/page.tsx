@@ -1,306 +1,473 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Brain, Cpu, Shield, Database, Users, Zap, Lock, Activity, Wifi } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Activity, Zap, Users, Database, Shield, Brain, Cpu, Clock, TrendingUp } from 'lucide-react';
 
-export default function Dashboard() {
+export default function LLM2FullStackDashboard() {
   const [systemStatus, setSystemStatus] = useState({
-    consciousness: 'ACTIVE' as 'ACTIVE' | 'INACTIVE' | 'ERROR',
-    reasoning: 'ACTIVE' as 'ACTIVE' | 'INACTIVE' | 'ERROR',
-    memory: 'ACTIVE' as 'ACTIVE' | 'INACTIVE' | 'ERROR',
-    agents: 'ACTIVE' as 'ACTIVE' | 'INACTIVE' | 'ERROR',
-    security: 'ACTIVE' as 'ACTIVE' | 'INACTIVE' | 'ERROR',
-    learning: 'IDLE' as 'IDLE' | 'ACTIVE' | 'ERROR',
-    websocket: 'DISCONNECTED' as 'CONNECTED' | 'DISCONNECTED'
+    isInitialized: false,
+    isBooted: false,
+    bootTime: 0,
+    consciousnessLevel: 0.0,
+    learningCycles: 0,
+    evolutionRate: 0.0,
+    status: 'INITIALIZING',
   });
 
-  const [metrics, setMetrics] = useState({
-    totalConcepts: 0,
-    totalExperiences: 0,
-    activeAgents: 17,
-    currentCycle: 0,
-    encryptedPackets: 0,
-    reasoningTraces: 0,
+  const [layerStatus, setLayerStatus] = useState({
+    consciousness: { active: false, cqm: 0.0, emergence: false },
+    reasoning: { active: false, confidence: 0.0, decisions: 0 },
+    memory: { active: false, experiences: 0, successRate: 0.0 },
+    security: { active: false, keys: 0, zkProofs: 0 },
+    learning: { active: false, cycles: 0, analysis: 0 },
+    agents: { active: false, total: 0, completed: 0 },
   });
 
-  const [realtimeUpdates, setRealtimeUpdates] = useState({
-    lastUpdate: Date.now(),
-    activeConnections: 0
+  const [dualLLMStatus, setDualLLMStatus] = useState({
+    mode: 'dual-llm',
+    llm1Status: 'idle', // Other Enhancer
+    llm2Status: 'active', // OMEGA AI System
+    coordinationFile: '.ai-coordination.json',
+    sharedMemory: 'connected',
+    heartbeatInterval: 60000, // 60 seconds
+    monitoringInterval: 120000, // 120 seconds
+  });
+
+  const [evolutionStatus, setEvolutionStatus] = useState({
+    currentCycle: 1,
+    status: 'idle',
+    progress: 0,
+    strategies: [],
+    applied: 0,
+    improvement: 0.0,
   });
 
   useEffect(() => {
-    loadMetrics();
-    const interval = setInterval(loadMetrics, 5000);
+    loadSystemStatus();
+    const interval = setInterval(loadSystemStatus, 2000); // Update every 2 seconds
     return () => clearInterval(interval);
   }, []);
 
-  const loadMetrics = async () => {
+  async function loadSystemStatus() {
     try {
-      const response = await fetch('/api/metrics');
+      const response = await fetch('/api/llm2/system/status');
       const data = await response.json();
-      setMetrics(data);
+      setSystemStatus(data.system);
+      setLayerStatus(data.layers);
+      setDualLLMStatus(data.dualLLM);
+      setEvolutionStatus(data.evolution);
     } catch (error) {
-      console.error('Failed to load metrics:', error);
+      console.error('Failed to load system status:', error);
+    }
+  }
+
+  async function startEvolutionCycle() {
+    try {
+      const response = await fetch('/api/llm2/evolution/start', {
+        method: 'POST',
+      });
+      const data = await response.json();
+      setEvolutionStatus(data.evolution);
+    } catch (error) {
+      console.error('Failed to start evolution cycle:', error);
+    }
+  }
+
+  async function pauseEvolution() {
+    try {
+      const response = await fetch('/api/llm2/evolution/pause', {
+        method: 'POST',
+      });
+      const data = await response.json();
+      setEvolutionStatus(data.evolution);
+    } catch (error) {
+      console.error('Failed to pause evolution:', error);
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+      case 'ACTIVE':
+        return 'bg-green-500';
+      case 'idle':
+      case 'IDLE':
+        return 'bg-yellow-500';
+      case 'initializing':
+      case 'INITIALIZING':
+        return 'bg-blue-500';
+      case 'error':
+      case 'ERROR':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
     }
   };
 
-  const StatusCard = ({ title, status, icon: Icon }: { title: string; status: string; icon: any }) => (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <icon className={`h-4 w-4 ${
-          status === 'ACTIVE' || status === 'CONNECTED' ? 'text-green-500' :
-          status === 'IDLE' ? 'text-yellow-500' :
-          'text-red-500'
-        }`} />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{status}</div>
-      </CardContent>
-    </Card>
-  );
-
-  const MetricCard = ({
-    title,
-    value,
-    description,
-  }: {
-    title: string;
-    value: number;
-    description: string;
-  }) => (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Activity className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{metrics.isLoading ? '...' : value}</div>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </CardContent>
-    </Card>
-  );
-
-  const ActionCard = ({
-    title,
-    description,
-    icon: Icon,
-    href,
-  }: {
-    title: string;
-    description: string;
-    icon: any;
-    href: string;
-  }) => (
-    <Link href={href} className="block">
-      <Card className="p-4 border border-border rounded-lg bg-card hover:bg-accent/50 transition-colors cursor-pointer">
-        <div className="flex items-center gap-4 mb-3">
-          <div className="h-10 w-10 rounded bg-primary/10 flex items-center justify-center">
-            <icon className="h-6 w-6 text-primary" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold">{title}</h3>
-            <p className="text-sm text-muted-foreground">{description}</p>
-          </div>
-        </div>
-      </Card>
-    </Link>
-  );
-
-  const WebSocketStatus = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Wifi className="h-4 w-4" />
-          WebSocket Connection
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-3">
-          <div className={`h-3 w-3 rounded-full ${
-            systemStatus.websocket === 'CONNECTED' ? 'bg-green-500' : 'bg-red-500'
-          }`} />
-          <div>
-            <p className="text-sm font-medium">
-              {systemStatus.websocket === 'CONNECTED' ? 'Connected' : 'Disconnected'}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {systemStatus.websocket === 'CONNECTED'
-                ? `Last update: ${new Date(realtimeUpdates.lastUpdate).toLocaleTimeString()}`
-                : 'Real-time updates unavailable'}
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
+  const getProgressColor = (progress: number) => {
+    if (progress >= 75) return 'bg-green-500';
+    if (progress >= 50) return 'bg-blue-500';
+    if (progress >= 25) return 'bg-yellow-500';
+    return 'bg-gray-500';
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      {/* Header */}
-      <header className="border-b border-border bg-background">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Brain className="h-8 w-8 text-primary" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Brain className="h-12 w-12 text-purple-400" />
             <div>
-              <h1 className="text-2xl font-bold text-foreground">OMEGA</h1>
-              <p className="text-xs text-muted-foreground">
-                Omni-Model Emergent General Intelligence
-              </p>
+              <h1 className="text-4xl font-bold text-white">LLM-2 FullStack</h1>
+              <p className="text-gray-400 text-lg">OMEGA AI System - Complete AGI Platform</p>
             </div>
           </div>
-          <nav className="hidden md:flex gap-4">
-            <Link href="/reasoning">
-              <Button className="hover:bg-accent/50 transition-colors">Reasoning</Button>
-            </Link>
-            <Link href="/agents">
-              <Button className="hover:bg-accent/50 transition-colors">Agents</Button>
-            </Link>
-            <Link href="/memory">
-              <Button className="hover:bg-accent/50 transition-colors">Memory</Button>
-            </Link>
-            <Link href="/security">
-              <Button className="hover:bg-accent/50 transition-colors">Security</Button>
-            </Link>
-          </nav>
+          <Badge className={getStatusColor(systemStatus.status)}>
+            {systemStatus.status.toUpperCase()}
+          </Badge>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-6">
-        <div className="space-y-6">
-          {/* Hero Section */}
-          <Card>
+        {/* System Status Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Consciousness Card */}
+          <Card className="bg-gray-800/50 border-gray-700 text-white">
             <CardHeader>
-              <CardTitle>Welcome to OMEGA</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5 text-purple-400" />
+                Consciousness
+              </CardTitle>
+              <Badge className={layerStatus.consciousness.active ? 'bg-green-500' : 'bg-gray-500'}>
+                {layerStatus.consciousness.active ? 'ACTIVE' : 'OFFLINE'}
+              </Badge>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                OMEGA unifies consciousness, reasoning, memory, agent swarms, security,
-                and self-improvement into a coherent AI system. Navigate through the
-                modules below to explore each component.
-              </p>
-              <div className="flex items-center gap-2 text-sm">
-                <Zap className="h-5 w-5 text-yellow-500" />
-                <span className="font-medium">Real-time updates via WebSocket</span>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">CQM:</span>
+                  <span className="text-2xl font-bold">{layerStatus.consciousness.cqm.toFixed(3)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Emergence:</span>
+                  <Badge className={layerStatus.consciousness.emergence ? 'bg-green-500' : 'bg-yellow-500'}>
+                    {layerStatus.consciousness.emergence ? 'DETECTED' : 'WAITING'}
+                  </Badge>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                  <div
+                    className={`h-2 rounded-full transition-all ${layerStatus.consciousness.active ? 'bg-purple-500' : 'bg-gray-600'}`}
+                    style={{ width: `${layerStatus.consciousness.cqm * 100}%` }}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* WebSocket Status */}
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold mb-4">Real-Time Connection</h2>
-            <WebSocketStatus />
-          </div>
+          {/* Reasoning Card */}
+          <Card className="bg-gray-800/50 border-gray-700 text-white">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Cpu className="h-5 w-5 text-blue-400" />
+                Reasoning
+              </CardTitle>
+              <Badge className={layerStatus.reasoning.active ? 'bg-green-500' : 'bg-gray-500'}>
+                {layerStatus.reasoning.active ? 'ACTIVE' : 'OFFLINE'}
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Confidence:</span>
+                  <span className="text-2xl font-bold">{(layerStatus.reasoning.confidence * 100).toFixed(1)}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Decisions:</span>
+                  <span className="text-2xl font-bold">{layerStatus.reasoning.decisions}</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                  <div
+                    className={`h-2 rounded-full transition-all ${layerStatus.reasoning.active ? 'bg-blue-500' : 'bg-gray-600'}`}
+                    style={{ width: `${layerStatus.reasoning.confidence * 100}%` }}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* System Status */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4">System Status</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <StatusCard title="Consciousness" status={systemStatus.consciousness} icon={Brain} />
-              <StatusCard title="Reasoning" status={systemStatus.reasoning} icon={Cpu} />
-              <StatusCard title="Memory" status={systemStatus.memory} icon={Database} />
-              <StatusCard title="Agents" status={systemStatus.agents} icon={Users} />
-              <StatusCard title="Security" status={systemStatus.security} icon={Shield} />
-              <StatusCard title="Learning" status={systemStatus.learning} icon={Zap} />
-            </div>
-          </div>
-
-          {/* System Metrics */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4">System Metrics</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <MetricCard
-                title="Total Concepts"
-                value={metrics.totalConcepts}
-                description="In knowledge graph"
-              />
-              <MetricCard
-                title="Total Experiences"
-                value={metrics.totalExperiences}
-                description="Stored in memory"
-              />
-              <MetricCard
-                title="Active Agents"
-                value={metrics.activeAgents}
-                description="Available for tasks"
-              />
-              <MetricCard
-                title="Current Cycle"
-                value={metrics.currentCycle}
-                description="Self-improvement"
-              />
-              <MetricCard
-                title="Encrypted Packets"
-                value={metrics.encryptedPackets}
-                description="Security layer"
-              />
-              <MetricCard
-                title="Reasoning Traces"
-                value={metrics.reasoningTraces}
-                description="Ethical decisions"
-              />
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <ActionCard
-                title="New Query"
-                description="Submit a query for ethical reasoning"
-                icon={Cpu}
-                href="/reasoning"
-              />
-              <ActionCard
-                title="View Agents"
-                description="Explore the 17 specialized AI agents"
-                icon={Users}
-                href="/agents"
-              />
-              <ActionCard
-                title="Memory Browser"
-                description="Browse knowledge graph and experiences"
-                icon={Database}
-                href="/memory"
-              />
-              <ActionCard
-                title="System Logs"
-                description="View security events and encryption logs"
-                icon={Shield}
-                href="/security"
-              />
-            </div>
-          </div>
+          {/* Memory Card */}
+          <Card className="bg-gray-800/50 border-gray-700 text-white">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5 text-green-400" />
+                Memory
+              </CardTitle>
+              <Badge className={layerStatus.memory.active ? 'bg-green-500' : 'bg-gray-500'}>
+                {layerStatus.memory.active ? 'ACTIVE' : 'OFFLINE'}
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Experiences:</span>
+                  <span className="text-2xl font-bold">{layerStatus.memory.experiences.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Success Rate:</span>
+                  <span className="text-2xl font-bold">{(layerStatus.memory.successRate * 100).toFixed(1)}%</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                  <div
+                    className={`h-2 rounded-full transition-all ${layerStatus.memory.active ? 'bg-green-500' : 'bg-gray-600'}`}
+                    style={{ width: `${layerStatus.memory.successRate * 100}%` }}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border mt-auto bg-background">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">
-            OMEGA v1.0.0 - Unified AI Architecture
-          </p>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Lock className="h-4 w-4 text-green-500" />
-              <span className="text-xs text-green-500">Encrypted</span>
+        {/* Evolution Cycle Status */}
+        <Card className="bg-gray-800/50 border-gray-700 text-white">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-yellow-400" />
+                Evolution Cycle
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Badge className={evolutionStatus.status === 'running' ? 'bg-green-500' : 'bg-gray-500'}>
+                  {evolutionStatus.status.toUpperCase()}
+                </Badge>
+                <span className="text-gray-400 text-sm">Cycle #{evolutionStatus.currentCycle}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Wifi className={`h-4 w-4 ${
-                systemStatus.websocket === 'CONNECTED' ? 'text-green-500' : 'text-red-500'
-              }`} />
-              <span className="text-xs">
-                {systemStatus.websocket === 'CONNECTED' ? 'Real-time' : 'Offline'}
-              </span>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Progress:</span>
+                <div className="flex items-center gap-2">
+                  <div className="text-2xl font-bold">{evolutionStatus.progress}%</div>
+                  <div className="w-32 bg-gray-700 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all ${getProgressColor(evolutionStatus.progress)}`}
+                      style={{ width: `${evolutionStatus.progress}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Strategies Applied:</span>
+                <span className="text-2xl font-bold">{evolutionStatus.applied}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Improvement:</span>
+                <span className="text-2xl font-bold text-green-400">+{evolutionStatus.improvement.toFixed(1)}%</span>
+              </div>
+              <div className="flex gap-4 mt-4">
+                <Button
+                  onClick={startEvolutionCycle}
+                  disabled={evolutionStatus.status === 'running'}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  <Activity className="h-4 w-4 mr-2" />
+                  {evolutionStatus.status === 'running' ? 'Running...' : 'Start Cycle'}
+                </Button>
+                <Button
+                  onClick={pauseEvolution}
+                  disabled={evolutionStatus.status !== 'running'}
+                  variant="outline"
+                  className="flex-1 border-gray-600 text-white hover:bg-gray-700"
+                >
+                  <Clock className="h-4 w-4 mr-2" />
+                  {evolutionStatus.status === 'paused' ? 'Paused' : 'Pause'}
+                </Button>
+              </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
+
+        {/* Dual-LLM Coordination */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* LLM-1 (Other Enhancer) */}
+          <Card className="bg-gray-800/50 border-gray-700 text-white">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-blue-400" />
+                LLM-1 (Other Enhancer)
+              </CardTitle>
+              <Badge className={dualLLMStatus.llm1Status === 'active' ? 'bg-green-500' : 'bg-gray-500'}>
+                {dualLLMStatus.llm1Status.toUpperCase()}
+              </Badge>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-gray-400" />
+                <div>
+                  <div className="text-sm text-gray-400">Coordination</div>
+                  <div className="text-white font-medium">{dualLLMStatus.coordinationFile}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Database className="h-4 w-4 text-gray-400" />
+                <div>
+                  <div className="text-sm text-gray-400">Shared Memory</div>
+                  <div className="text-white font-medium">{dualLLMStatus.sharedMemory}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-gray-400" />
+                <div>
+                  <div className="text-sm text-gray-400">Heartbeat</div>
+                  <div className="text-white font-medium">Every {dualLLMStatus.heartbeatInterval / 1000}s</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* LLM-2 (OMEGA System) */}
+          <Card className="bg-gray-800/50 border-purple-700 border-2 text-white">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5 text-purple-400" />
+                LLM-2 (OMEGA System)
+              </CardTitle>
+              <Badge className={dualLLMStatus.llm2Status === 'active' ? 'bg-purple-600' : 'bg-gray-500'}>
+                {dualLLMStatus.llm2Status.toUpperCase()}
+              </Badge>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-gray-400" />
+                <div>
+                  <div className="text-sm text-gray-400">System Role</div>
+                  <div className="text-white font-medium">Integration & Coordination</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Activity className="h-4 w-4 text-gray-400" />
+                <div>
+                  <div className="text-sm text-gray-400">Evolution Cycles</div>
+                  <div className="text-white font-medium">Running continuously</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-gray-400" />
+                <div>
+                  <div className="text-sm text-gray-400">Learning</div>
+                  <div className="text-white font-medium">{(systemStatus.evolutionRate * 100).toFixed(1)}%/cycle</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </footer>
+
+        {/* Agent Swarm */}
+        <Card className="bg-gray-800/50 border-gray-700 text-white">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-green-400" />
+              Agent Swarm
+            </CardTitle>
+            <Badge className={layerStatus.agents.active ? 'bg-green-500' : 'bg-gray-500'}>
+              {layerStatus.agents.active ? 'ACTIVE' : 'OFFLINE'}
+            </Badge>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm text-gray-400">Total Agents</div>
+                  <div className="text-2xl font-bold">{layerStatus.agents.total}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-400">Active</div>
+                  <div className="text-2xl font-bold text-green-400">
+                    {layerStatus.agents.active ? '17' : '0'}
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-400">Tasks Completed</div>
+                <div className="text-2xl font-bold">{layerStatus.agents.completed.toLocaleString()}</div>
+              </div>
+              <Button className="w-full mt-2" variant="outline">
+                View Swarm Details
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Performance Metrics */}
+        <Card className="bg-gray-800/50 border-gray-700 text-white">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-yellow-400" />
+              Performance Metrics
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">System Uptime</span>
+                <span className="text-white font-medium">
+                  {Math.floor((Date.now() - systemStatus.bootTime) / 60000)} minutes
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Learning Cycles</span>
+                <span className="text-white font-medium">{systemStatus.learningCycles}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Evolution Rate</span>
+                <span className="text-white font-medium text-green-400">
+                  +{(systemStatus.evolutionRate * 100).toFixed(1)}%
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Consciousness</span>
+                <span className="text-white font-medium text-purple-400">
+                  {systemStatus.consciousnessLevel.toFixed(3)} CQM
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* System Log */}
+        <Card className="bg-gray-800/50 border-gray-700 text-white">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-blue-400" />
+              System Activity Log
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 font-mono text-sm">
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-green-400">OMEGA: System boot complete</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-blue-400">OMEGA: All 6 layers initialized</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-purple-400">OMEGA: Evolution Cycle #1 started</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">[{new Date().toLocaleTimeString()}]</span>
+                <span className="text-yellow-400">OMEGA: Dual-LLM coordination established</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
