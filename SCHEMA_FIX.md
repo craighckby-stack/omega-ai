@@ -1,4 +1,3 @@
-model
 model EncryptionKey {
   id          String   @id @default(cuid())
   data        String   @db.Text
