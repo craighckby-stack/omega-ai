@@ -1,81 +1,78 @@
-# PRIORITY 2: SECURITY API TEST FAILURES - DEFERRED
+# P2 SECURITY API FAILURES - DEFERRED
 
-## ðŸŸ¢ STATUS: DEFERRED (AWAITING P1: SCHEMA FIX)
+## 🟡 STATUS: DEFERRED (AWAITING P1 SCHEMA FIX)
 
 ---
 
-## ðŸ”  ROOT CAUSE ANALYSIS
+## 🔬 ROOT CAUSE ANALYSIS
 
-Security API tests are failing due to database operations being blocked by critical schema validation errors (Prisma). The API is correctly handling the database failure by returning a 500 error object, which lacks the expected `success: true` property.
+Security API tests fail because database operations are blocked by critical schema validation errors (Prisma). The API correctly returns a 500 error, which lacks the expected `success: true` property.
 
 ### FAILING TESTS:
 
 | Test | Status | Reason | Expected vs Actual Response |
 |------|--------|--------|-----------------------------|
-| 1. `POST /api/security (encrypt)` | â Œ FAILING | `expect(data).toHaveProperty('success')` fails. | Expected: `{ success: true, ... }` | Actual: `{ error: "Prisma Error..." }` |
-| 2. `POST /api/security (generate-key)` | âš ï¸  SLOW (>5s) | RSA generation is slow; database persistence fails, forcing retry/timeout issues. | Actual: `{ error: "Prisma Error..." }` |
+| 1. `POST /api/security (encrypt)` | ❌ FAILING | Missing `success` property. | Expected: `{ success: true, ... }` \| Actual: `{ error: "Prisma Error..." }` |
+| 2. `POST /api/security (generate-key)` | ⚠️ SLOW (>5s) | Database persistence failure forces timeouts. | Actual: `{ error: "Prisma Error..." }` |
 
 ---
 
-## ðŸŽ¯ DEPENDENCY CRITICAL PATH
+## 🔗 DEPENDENCY CRITICAL PATH
 
-The security API's reliance on successful `db.encryptionKey.create()` calls forms a hard dependency on the correct Prisma schema.
+API success relies on `db.encryptionKey.create()` calls, establishing a hard dependency on the correct Prisma schema.
 
-```
-Security API (Success Response)
-  â†“
-Database Operation (db.create)
-  â†“
-Schema Validation (PRISMA)
-  â†“ (BLOCKING)
-Database Push (Migration)
+```mermaid
+graph TD
+    A[Security API Success Response] --> B(Database Operation - db.create)
+    B --> C(Schema Validation - PRISMA)
+    C -- BLOCKING --> D(Database Migration/Push)
 ```
 
-**Conclusion**: Security API Fixes (P2) are impossible until Schema Validation (P1) is resolved.
+**Conclusion**: Security API Fixes (P2) are blocked until Schema Validation (P1) is resolved.
 
 ---
 
-## ðŸš¨ ERROR CHAIN
+## 🚨 ERROR CHAIN
 
 1. Security API attempts `db.encryptionKey.create()`.
 2. Prisma Validation FAILS (Schema error).
-3. Database operation throws `PrismaClientKnownRequestError`.
+3. Database throws `PrismaClientKnownRequestError`.
 4. API route `catch` block executes.
 5. API returns HTTP 500/JSON: `{ error: error.message }`.
 6. Test assertion fails: `expect(data).toHaveProperty('success')`.
 
 ---
 
-## âœ… FIX ORDER (CRITICAL PATH)
+## ✅ FIX ORDER (CRITICAL PATH)
 
-1. **PRIORITY 1**: Fix `prisma/schema.prisma` (syntax, duplicates, validation). Run `db:push`.
-2. **PRIORITY 2**: Verify Security API. (No code changes anticipated, success responses will naturally flow when P1 is fixed).
+1. **PRIORITY 1**: Fix `prisma/schema.prisma` (syntax/validation). Run `db:push`.
+2. **PRIORITY 2**: Verify Security API. (No code changes anticipated; success responses will flow naturally when P1 is fixed).
 
 ---
 
-## ðŸŽ¯ PROOF OF FAILURE
+## 📋 PROOF OF FAILURE
 
 ### Test 1: `should handle encrypt action successfully`
 
-| Assertion | Status (Broken Schema) | Expected Outcome (Fixed Schema) |
-|-----------|------------------------|---------------------------------|
-| `expect(response.status).toBe(200)` | â Œ FAILING (is 500) | âœ… PASSING (will be 200) |
-| `expect(data).toHaveProperty('success')` | â Œ FAILING | âœ… PASSING |
+| Assertion | Broken Schema Status | Fixed Schema Outcome |
+|-----------|----------------------|----------------------|
+| `expect(response.status).toBe(200)` | ❌ FAILING (is 500) | ✅ PASSING (will be 200) |
+| `expect(data).toHaveProperty('success')` | ❌ FAILING | ✅ PASSING |
 
 ---
 
-## ðŸš€ OPTIMIZED DECISION
+## 🚀 OPTIMIZED DECISION
 
 **DECISION**: Defer P2 until P1 (Schema Fix) is complete.
 
 | Strategy | Time | Outcome | Rationale |
 |----------|------|---------|-----------|
 | **Fix Schema (P1)** | 2-4h | Success | Fixes the root cause; P2 tests pass instantly. |
-| **Fix P2 API First** | 2h | Failure | Cannot bypass database dependency; wastes time implementing error workarounds. |
+| **Fix P2 API First** | 2h | Failure | Cannot bypass database dependency; wastes time on workarounds. |
 
 ---
 
-## ðŸ“Š PROJECTION
+## 📈 PROJECTION
 
 | Metric | Current Status | Post P1/P2 Fix | Improvement |
 |--------|----------------|----------------|-------------|
@@ -85,9 +82,9 @@ Database Push (Migration)
 
 ---
 
-## ðŸ“ž CONCLUSION
+## 📝 CONCLUSION
 
-**Status**: ðŸŸ¢ **PRIORITY 2 DEFERRED**
+**Status**: 🟡 **PRIORITY 2 DEFERRED**
 
 **Next Action**: Focus on fixing `prisma/schema.prisma` (Priority 1). P2 tests will automatically pass once the database layer is stable.
 
