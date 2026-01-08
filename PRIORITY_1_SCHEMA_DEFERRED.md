@@ -1,43 +1,37 @@
-# PRIORITY 1: SCHEMA VALIDATION (DEFERRED)
+# P1: SCHEMA VALIDATION (DEFERRED)
 
-## 1. Issue Summary
+## 1. CRITICAL ISSUE STATUS
 
-**Error**: `This line is invalid. It does not start with any known Prisma schema keyword. --> prisma/schema.prisma:245`
-**Root Cause**: The schema file committed to the repository was already corrupted/broken at lines 245-246.
-**Impact**: CRITICAL - Blocks all database operations (`prisma generate`, migration).
-**Attempts**: 1+ hour spent on manual editing, resulting in further file corruption (binary/control characters).
+| Aspect | Details |
+| :--- | :--- |
+| **Priority 1** | Schema Validation Failure |
+| **Root Cause** | Corrupted `prisma/schema.prisma` (L245-246). Manual repair failed, resulting in binary corruption. |
+| **Impact** | CRITICAL. Blocks all `prisma generate` and migration operations. |
+| **Time Sink** | 2-4 hours required for dedicated debug/rebuild. |
 
-## 2. Why Defer?
+## 2. DEFERRAL RATIONALE
 
-Manual schema repair is currently time-intensive and unsuccessful. The estimated time required for a clean fix (Option 3: Rebuild) is 2-3 hours of dedicated debugging. This is blocking progress on all other priorities.
+P1 is currently a critical time sink blocking all progress. P2 through P6 are independent of the schema integrity issue and can be implemented immediately.
 
-## 3. Decision: Deferment & Path Forward
+**Decision:** Defer P1 rebuild to a dedicated task later. Proceed immediately to Priority 2 for rapid test recovery.
 
-**Chosen Approach**: Defer Priority 1 and immediately proceed to Priority 2 (Security API Fixes).
+## 3. IMMEDIATE NEXT STEP: PRIORITY 2 (Security API Fixes)
 
-**Rationale**:
-1.  Focusing on the schema is a critical time sink without progress.
-2.  Priorities 2, 3, 4, 5, and 6 are test-related and *do not require schema changes* to implement fixes.
-3.  Deferral allows immediate progress on 40+ other failing tests.
+These fixes rely on API response structure correction and timeout adjustments, achieving immediate ROI without database dependency.
 
-## 4. Immediate Next Step: Priority 2 (Security API Fixes)
-
-The Security API test failures are caused by API response structure issues and timeouts, not the underlying schema validation error.
-
-| Test Affected | Root Cause | Schema Dependency |
+| Test Affected | Fix Required | Outcome |
 | :--- | :--- | :--- |
-| `should handle encrypt action successfully` | API response structure incorrect (missing `success` property). | NO |
-| `should generate-key action successfully` | Slow RSA key generation (timeout needed). | NO |
+| `handle encrypt action` | Correct API response structure (`success` property). | Pass |
+| `generate-key action` | Increase timeout for slow RSA key generation. | Pass |
 
-**Expected Outcome**: +3 tests passing immediately, increasing the overall test pass rate.
+**Expected Outcome:** +3 tests passing immediately.
 
-## 5. Status Summary
+## 4. STATUS SUMMARY
 
-| Aspect | Status | Notes |
-| :--- | :--- | :--- |
-| **P1 Status** | DEFERRED | Needs 2-4 hours of dedicated work later. |
-| **Schema Integrity** | BROKEN | Manual attempts failed due to file corruption. |
-| **Next Action** | Move to Priority 2 | Security API Fixes. |
-| **Plan** | Defer major schema fix to a dedicated task. | Ensure immediate progress elsewhere. |
+| Metric | Value |
+| :--- | :--- |
+| **P1 Status** | DEFERRED (Broken Schema) |
+| **Next Action** | Execute Priority 2 Fixes |
+| **Goal** | Immediate increase in test pass rate |
 
 **PROCEEDING TO PRIORITY 2.**
