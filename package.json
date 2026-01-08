@@ -2,7 +2,6 @@
   "name": "omega-ai",
   "version": "1.0.0",
   "description": "OMEGA - Omni-Model Emergent General Intelligence Architecture",
-  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
