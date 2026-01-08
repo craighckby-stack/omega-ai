@@ -1,4 +1,4 @@
-name: Deploy
+name: Deployment Workflow
 
 on:
   push:
@@ -14,43 +14,42 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy to Production
+    name: Production Deployment
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Bun
+    - name: Setup Bun Environment
       uses: oven-sh/setup-bun@v1
       with:
         bun-version: 1.1.x
 
-    - name: Cache dependencies
-      id: cache-bun
+    - name: Restore Bun Dependency Cache
       uses: actions/cache@v4
       with:
         path: ~/.bun/install/cache
         key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
         restore-keys: ${{ runner.os }}-bun-
 
-    - name: Install dependencies
+    - name: Install Frozen Dependencies
       run: bun install --frozen-lockfile
 
-    - name: Build application
+    - name: Build Production Artifacts
       run: bun run build
       env:
         NODE_ENV: production
 
-    - name: Run database migrations
+    - name: Run Database Migrations
       run: bun run db:push
 
-    - name: Deploy to production
+    - name: Execute OMEGA Deployment
       run: |
-        echo "Initiating OMEGA deployment."
-        # Add actual deployment logic here.
-        echo "Deployment complete."
+        echo "Commencing production deployment sequence."
+        # Insert actual deployment logic here (e.g., server update, cloud artifact deployment)
+        echo "Deployment sequence finished."
 
-    - name: Notify deployment status
+    - name: Notify Deployment Status
       if: always()
-      run: echo "Deployment status: SUCCESS (SHA: ${{ github.sha }})"
+      run: echo "Deployment status: SUCCESS (Ref: ${{ github.ref }}, SHA: ${{ github.sha }})"
