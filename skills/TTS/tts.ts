@@ -6,18 +6,15 @@ const DEFAULT_VOICE = "tongtong";
 const DEFAULT_OUTFILE = "output.wav";
 const MAX_TEXT_PREVIEW = 50;
 
-/**
- * Converts text to speech (TTS) and saves the output to a file.
- */
 async function main() {
     const [rawText, rawOutFile] = process.argv.slice(2);
     
-    const text = rawText ? rawText.trim() : '';
+    // Use optional chaining for safe trimming
+    const text = rawText?.trim() || ''; 
     const absoluteOutFile = path.resolve(rawOutFile || DEFAULT_OUTFILE);
 
     if (!text) {
-        console.error('ERROR: Text input required.');
-        console.log(`Usage: node tts.js "Your text here" [optional/output/path.wav]`);
+        console.error(`ERROR: Text input required.\nUsage: node tts.js "Your text here" [optional/output/path.wav]`);
         process.exit(1);
     }
 
@@ -36,27 +33,27 @@ async function main() {
             voice: DEFAULT_VOICE,
             speed: 1.0,
             response_format: "wav",
-            stream: false,
         });
 
+        // Defensive check: Ensure the response is usable (like a Fetch Response object)
         if (!response || typeof response.arrayBuffer !== 'function') {
             throw new Error("Invalid or unexpected response structure received from TTS API.");
         }
 
         const arrayBuffer = await response.arrayBuffer();
         
-        // Optimized Buffer creation for Node.js environments
+        // Convert ArrayBuffer directly to Node.js Buffer for writing
         const buffer = Buffer.from(arrayBuffer); 
         
         fs.writeFileSync(absoluteOutFile, buffer);
         
-        console.log(`\n✅ TTS audio successfully saved to ${absoluteOutFile}`);
+        console.log(`\n[SUCCESS] Audio saved: ${absoluteOutFile}`);
     } catch (err) {
         console.error("\nFATAL TTS FAILURE:");
         if (err instanceof Error) {
-            console.error(`Message: ${err.message}`);
+            console.error(`Error: ${err.message}`);
         } else {
-            console.error(`An unknown error occurred: ${String(err)}`);
+            console.error(`Unknown error: ${String(err)}`);
         }
         process.exit(1);
     }
