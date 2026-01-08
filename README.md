@@ -1,28 +1,26 @@
 # DARLIK KHAN: The Half-Assed AGI Scaffold
 
-## Project Mission
-To rapidly iterate on disparate, half-formed AI concepts, mashing them together into a single, functional scaffold. This serves as a quick-start foundation for building complex, experimental AI systems.
+## Mission Statement
+Rapid iteration and integration of disparate, experimental AI concepts into a single, functional, quick-start scaffold. Efficiency over elegance.
 
-## Core Inputs (Gemini Ideas)
-These links represent the initial concepts intended for integration:
+## Source Concepts (Gemini Prototypes)
 
-| Title | Link | Notes |
+| Prototype | Link | Notes |
 | :--- | :--- | :--- |
-| Auto Gemini Preview Scaffold | `https://gemini.google.com/share/7a8f004e0c20` | Current scaffold structure. |
-| Idea 2 | `https://gemini.google.com/share/c0dd4a3ef852` | Secondary concept link. |
-| New Idea | `https://gemini.google.com/share/d31eabdb0e5b` | Core "mashup" idea inception. |
-| Debugger Demo | `https://gemini.google.com/share/cff3628bfc67` | Lazy debugging implementation. |
-| TBC | `https://gemini.google.com/share/a0013ccc9e93` | Placeholder concept. |
-| LOL | `https://gemini.google.com/share/249a6d6d4366` | Unspecified viral concept. |
+| Preview Scaffold | `https://gemini.google.com/share/7a8f004e0c20` | Current structure foundation. |
+| Secondary Concept | `https://gemini.google.com/share/c0dd4a3ef852` | Initial integration target. |
+| Core Mashup Inception | `https://gemini.google.com/share/d31eabdb0e5b` | The raison d'être. |
+| Lazy Debugger | `https://gemini.google.com/share/cff3628bfc67` | Utility implementation. |
+| Placeholder | `https://gemini.google.com/share/a0013ccc9e93` | TBC concept slot. |
+| Viral Link | `https://gemini.google.com/share/249a6d6d4366` | Unspecified concept. |
 
-## Target Components
-The goal is to integrate these features into the scaffold:
+## Target Feature Integration
+Immediate goals for the scaffold:
 
-1.  **The Builder (Z):** A system that can sign up users, take a fullstack repo/token, and autonomously build or enhance the code based on the combined AI ideas.
-2.  **The Debugger:** A Gemini-powered utility to automatically identify and fix code flaws (for maximizing laziness).
+1.  **The Builder (Z-Engine):** System for user signup, fullstack repo/token ingestion, and autonomous code enhancement based on integrated AI ideas.
+2.  **The Debugger (Fix-It-Now):** Gemini utility for automated identification and correction of code flaws (maximizes laziness).
 
 ---
 
-## Evolution Report (Superseded by Reality)
-
-*The extensive fictional evolutionary analysis report previously present has been purged to maintain efficiency and focus on functional implementation.*
+## Analysis Purge
+*Extensive evolutionary reports were purged for efficiency and focus on functional implementation.*
