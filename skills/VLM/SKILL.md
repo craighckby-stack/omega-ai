@@ -1,23 +1,23 @@
 name: VLM
-description: Implement vision-based AI chat capabilities using the z-ai-web-dev-sdk. Use this skill when the user needs to analyze images, describe visual content, or create applications that combine image understanding with conversational AI. Supports image URLs and base64 encoded images for multimodal interactions.
+description: Implement vision-based AI chat capabilities using the z-ai-web-dev-sdk. Analyze images, describe visual content, or create multimodal applications combining image understanding with conversational AI. Supports URLs and base64 encoded images.
 license: MIT
 ---
 
 # VLM (Vision Chat) Skill Reference
 
-This skill guides the implementation of vision chat functionality using the `z-ai-web-dev-sdk`, enabling AI models to understand and respond to images combined with text prompts.
+This skill documents the implementation of vision capabilities using the `z-ai-web-dev-sdk`, enabling AI models to process and respond to images combined with text prompts.
 
 ## Skill Location
 
 **Path**: `{project_path}/skills/VLM`
 
-Reference scripts for testing are available in the `{Skill Location}/scripts/` directory (e.g., `{Skill Location}/scripts/vlm.ts`).
+Reference scripts for testing are located in the `skills/VLM/scripts/` directory (e.g., `skills/VLM/scripts/vlm.ts`).
 
 ## Overview
 
-Vision Chat allows you to build applications that analyze images, extract information from visual content, and answer questions about images through natural language conversation.
+Vision Chat allows you to build applications that analyze visual content, extract information, and answer questions about images via natural language conversation.
 
-**IMPORTANT**: `z-ai-web-dev-sdk` MUST be used in backend code only. Never use it in client-side code.
+**IMPORTANT**: The `z-ai-web-dev-sdk` MUST be used in backend (server-side) code only. Never expose it in client-side code.
 
 ## Prerequisites
 
@@ -25,96 +25,89 @@ The `z-ai-web-dev-sdk` package is already installed. Import it as shown in the e
 
 ## CLI Usage (Simple Tasks)
 
-For simple image analysis tasks, use the `z-ai CLI` for quick descriptions, testing, or simple automation.
+For rapid prototyping, quick analysis, or scripting, use the `z-ai CLI`.
 
 ### Basic Analysis
 
 ```bash
 # Describe an image from URL
-z-ai vision --prompt "What's in this image?" --image "https://example.com/photo.jpg"
+z-ai vision --prompt "What is the main subject?" --image "https://example.com/photo.jpg"
 
-# Using short options for local file analysis
-z-ai vision -p "What objects are in this photo?" -i "./photo.jpg"
+# Analyze a local file
+z-ai vision -p "Count the people and describe their activities" -i "./crowd.jpg"
 ```
 
 ### Advanced Tasks
 
 ```bash
-# Analyze multiple images
+# Compare multiple images with Chain-of-Thought reasoning
 z-ai vision \
-  -p "Compare these two images" \
+  -p "Compare these two photos" \
   -i "./photo1.jpg" \
-  -i "./photo2.jpg"
-
-# Enable Chain-of-Thought reasoning
-z-ai vision \
-  -p "Count the people and describe their activities" \
-  -i "./crowd.jpg" \
+  -i "./photo2.jpg" \
   --thinking
 
-# Stream output and save to file
-z-ai vision -p "Describe this image in detail" -i "./photo.jpg" --stream -o analysis.json
+# Stream output to console
+z-ai vision -p "Describe this image in detail" -i "./photo.jpg" --stream
 ```
 
 ### CLI Parameters Summary
 
 | Parameter | Alias | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `--prompt` | `-p` | **Yes** | Question or instruction about the image(s) |
-| `--image` | `-i` | Optional | Image URL or local file path (can be used multiple times) |
-| `--thinking` | `-t` | Optional | Enable chain-of-thought reasoning (default: disabled) |
-| `--output` | `-o` | Optional | Output file path (JSON format) |
-| `--stream` | | Optional | Stream the response in real-time |
+| `--prompt` | `-p` | **Yes** | The conversational prompt or instruction. |
+| `--image` | `-i` | Optional | Image URL or local file path. Use multiple times for multimodal input. |
+| `--thinking` | `-t` | Optional | Enable Chain-of-Thought (CoT) reasoning for complex tasks. |
+| `--output` | `-o` | Optional | Output file path (JSON format). |
+| `--stream` | | Optional | Stream the response in real-time. |
 
 ### When to Use CLI vs SDK
 
 | Use Case | Recommended Tool |
 | :--- | :--- |
-| Quick image analysis / testing | CLI |
-| One-off descriptions or simple scripts | CLI |
-| Multi-turn conversations with visual context | SDK |
-| Dynamic analysis in production applications | SDK |
-| Batch processing with custom logic | SDK |
+| Quick descriptions or testing | CLI |
+| Simple automation scripts | CLI |
+| Dynamic analysis in production APIs | SDK (with cached instance) |
+| Multi-turn conversations with history | SDK |
+| Custom processing and batch logic | SDK |
 
 ---
 
-## Recommended Approach
-
-For optimal performance and reliability, use base64 encoding to transmit image data directly to the model instead of relying on external image URLs.
-
 ## Supported Media Content Types
 
-The Vision Chat API supports combining text prompts with various media types:
+The Vision Chat API supports combining text prompts with various media types within the `content` array structure:
 
-### 1. `image_url` (Static Images)
-Use for PNG, JPEG, GIF, WebP, etc.
+### 1. `image_url` (Images)
+Supports PNG, JPEG, GIF, WebP, etc. Use this for URLs or base64 data URIs.
 ```typescript
-{ type: 'image_url', image_url: { url: imageUrl } }
+{ type: 'image_url', image_url: { url: imageUrlOrDataUri } }
 ```
 
-### 2. `video_url` (Video Files)
-Use for MP4, AVI, MOV, etc.
+### 2. `video_url` (Videos)
+Supports MP4, AVI, MOV, etc.
 ```typescript
 { type: 'video_url', video_url: { url: videoUrl } }
 ```
 
-### 3. `file_url` (Document Files)
-Use for PDF, DOCX, TXT, etc.
+### 3. `file_url` (Documents)
+Supports PDF, DOCX, TXT, etc.
 ```typescript
 { type: 'file_url', file_url: { url: fileUrl } }
 ```
 
-**Note**: Multiple content types (e.g., text, multiple images, and a document) can be combined in a single user message.
+**Note**: A single user message can contain a mix of text, multiple images, videos, and documents.
 
 ## SDK Implementation
 
-### Single Image Analysis
+### Single Image Analysis (URL)
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
 
 /**
  * Analyzes a single image URL based on a specific question.
+ * @param {string} imageUrl The public URL of the image.
+ * @param {string} question The prompt for the model.
  */
 async function analyzeImage(imageUrl, question) {
   const zai = await ZAI.create();
@@ -129,15 +122,15 @@ async function analyzeImage(imageUrl, question) {
         ]
       }
     ],
-    // Generally recommended to disable thinking unless complex reasoning is required
+    // Recommended to disable 'thinking' unless complex CoT reasoning is required
     thinking: { type: 'disabled' } 
   });
 
   return response.choices[0]?.message?.content;
 }
 
-// Usage
-// const result = await analyzeImage('https://example.com/product.jpg', 'Describe this product in detail');
+// Usage:
+// const result = await analyzeImage('https://example.com/product.jpg', 'Describe this product in detail.');
 ```
 
 ### Multiple Images Comparison
@@ -147,6 +140,8 @@ import ZAI from 'z-ai-web-dev-sdk';
 
 /**
  * Compares multiple images based on a user prompt.
+ * @param {string[]} imageUrls Array of image URLs.
+ * @param {string} question Comparison prompt.
  */
 async function compareImages(imageUrls, question) {
   const zai = await ZAI.create();
@@ -160,25 +155,27 @@ async function compareImages(imageUrls, question) {
   ];
 
   const response = await zai.chat.completions.createVision({
-    messages: [{ role: 'user', content: content }],
+    messages: [{ role: 'user', content }],
     thinking: { type: 'disabled' }
   });
 
   return response.choices[0]?.message?.content;
 }
 
-// Usage
-// const comparison = await compareImages(['url1', 'url2'], 'Compare the differences');
+// Usage:
+// const comparison = await compareImages(['url1', 'url2'], 'Highlight the differences in composition.');
 ```
 
 ### Base64 Image Upload (Recommended for Local Files)
 
+Using base64 encoding ensures data is sent directly to the model without external fetching dependencies.
+
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
-import fs from 'fs'; // Requires Node.js filesystem module
+import fs from 'fs'; 
 
 /**
- * Analyzes a local image file by encoding it as base64 data URI.
+ * Analyzes a local image file by encoding it as a base64 data URI.
  */
 async function analyzeLocalImage(imagePath, question) {
   const zai = await ZAI.create();
@@ -187,9 +184,8 @@ async function analyzeLocalImage(imagePath, question) {
   const imageBuffer = fs.readFileSync(imagePath);
   const base64Image = imageBuffer.toString('base64');
   
-  // Basic MIME type detection
+  // Note: Production code should use robust MIME detection logic
   const mimeType = imagePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
-  
   const dataUri = `data:${mimeType};base64,${base64Image}`;
 
   const response = await zai.chat.completions.createVision({
@@ -198,7 +194,7 @@ async function analyzeLocalImage(imagePath, question) {
         role: 'user',
         content: [
           { type: 'text', text: question },
-          { type: 'image_url', image_url: { url: dataUri } }
+          { type: 'image_url', image_url: { url: dataUri } } // Pass data URI here
         ]
       }
     ],
@@ -213,7 +209,7 @@ async function analyzeLocalImage(imagePath, question) {
 
 ### Conversational Session Management
 
-This class demonstrates maintaining chat history (`this.messages`) for multi-turn conversations where the image context persists.
+Maintaining chat history (`this.messages`) allows the AI to retain visual context across multiple turns.
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
@@ -221,6 +217,7 @@ import ZAI from 'z-ai-web-dev-sdk';
 class VisionChatSession {
   constructor() {
     this.messages = [];
+    this.zai = null;
   }
 
   async initialize() {
@@ -228,6 +225,8 @@ class VisionChatSession {
   }
 
   async processRequest() {
+    if (!this.zai) throw new Error("Session not initialized. Call initialize() first.");
+    
     const response = await this.zai.chat.completions.createVision({
       messages: this.messages,
       thinking: { type: 'disabled' }
@@ -235,23 +234,23 @@ class VisionChatSession {
 
     const assistantMessage = response.choices[0]?.message?.content;
     
-    // Store assistant response for context
+    // Store assistant response for history context
     this.messages.push({ role: 'assistant', content: assistantMessage });
 
     return assistantMessage;
   }
   
+  /** Adds an image and an initial question to the session history. */
   async addImage(imageUrl, initialQuestion) {
-    this.messages.push({
-      role: 'user',
-      content: [
-        { type: 'text', text: initialQuestion },
-        { type: 'image_url', image_url: { url: imageUrl } }
-      ]
-    });
+    const content = [
+      { type: 'text', text: initialQuestion },
+      { type: 'image_url', image_url: { url: imageUrl } }
+    ];
+    this.messages.push({ role: 'user', content });
     return this.processRequest();
   }
 
+  /** Adds a follow-up text question to the session history. */
   async followUp(question) {
     this.messages.push({
       role: 'user',
@@ -261,16 +260,18 @@ class VisionChatSession {
   }
 }
 
+/*
 // Usage:
 // const session = new VisionChatSession();
 // await session.initialize();
 // const initial = await session.addImage('url/chart.jpg', 'What does this chart show?');
-// const followup = await session.followUp('What are the key trends?');
+// const followup = await session.followUp('What are the key trends mentioned previously?');
+*/
 ```
 
-### Image Classification and Structured Tagging
+### Image Classification and Structured Tagging (JSON Output)
 
-Prompting the model to return structured data (JSON) for easy consumption.
+Prompting the model to return structured JSON data for easy programmatic consumption.
 
 ```javascript
 import ZAI from 'z-ai-web-dev-sdk';
@@ -278,7 +279,7 @@ import ZAI from 'z-ai-web-dev-sdk';
 async function classifyImage(imageUrl) {
   const zai = await ZAI.create();
 
-  const prompt = `Analyze this image and provide: 1. Main category 2. Key objects detected 3. Scene description 4. Suggested tags (comma-separated). Format your response strictly as JSON.`;
+  const prompt = `Analyze this image and provide: 1. Main category 2. Key objects detected 3. Scene description 4. Suggested tags (comma-separated). Format your response strictly as a JSON object.`;
 
   const response = await zai.chat.completions.createVision({
     messages: [
@@ -298,8 +299,8 @@ async function classifyImage(imageUrl) {
   try {
     return JSON.parse(content);
   } catch (e) {
-    console.error("Failed to parse JSON response:", content);
-    return { rawResponse: content };
+    console.error("Failed to parse JSON response. Raw output:", content);
+    return null;
   }
 }
 ```
@@ -312,19 +313,15 @@ import ZAI from 'z-ai-web-dev-sdk';
 async function extractText(imageUrl) {
   const zai = await ZAI.create();
 
+  const prompt = 'Extract all text from this image. Preserve the original layout and formatting as much as possible.';
+
   const response = await zai.chat.completions.createVision({
     messages: [
       {
         role: 'user',
         content: [
-          {
-            type: 'text',
-            text: 'Extract all text from this image. Preserve the layout and formatting as much as possible.'
-          },
-          {
-            type: 'image_url',
-            image_url: { url: imageUrl }
-          }
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: imageUrl } }
         ]
       }
     ],
@@ -338,13 +335,12 @@ async function extractText(imageUrl) {
 ## Best Practices
 
 ### 1. Prompt Engineering
-- Be specific about required output (e.g., "List", "Compare", "Format as JSON").
-- Provide necessary context (e.g., "This is a financial chart", "This is a handwritten receipt").
+- **Specificity:** Be explicit about the required output format (e.g., "List", "Compare", "Format as valid JSON").
+- **Context:** Provide necessary domain context (e.g., "This is a blueprint", "This is historical data").
 
-### 2. Performance and Quality
-- Use high-quality images.
-- Optimize image size to balance quality and speed.
-- Use base64 encoding for reliability and speed when possible.
+### 2. Performance
+- **Caching SDK:** Initialize and cache the `ZAI` instance globally in server applications (see Express example below). Do not call `ZAI.create()` on every request.
+- **Data Transfer:** Use base64 encoding for local files or critical data streams for reliability and speed, avoiding reliance on external URL fetching.
 
 ### 3. Error Handling Example
 
@@ -361,26 +357,25 @@ async function safeVisionChat(imageUrl, question) {
             { type: 'image_url', image_url: { url: imageUrl } }
           ]
         }
-      ],
-      thinking: { type: 'disabled' }
+      ]
     });
 
     return { success: true, content: response.choices[0]?.message?.content };
   } catch (error) {
-    console.error('Vision chat error:', error.message);
-    return { success: false, error: error.message };
+    // Log detailed error and return a safe, generic message to the client
+    console.error('Vision API Request Failed:', error.message);
+    return { success: false, error: 'Failed to process image request.' };
   }
 }
 ```
 
 ### 4. Security
-- Validate and sanitize all user-provided data (URLs, images).
-- Implement rate limiting for public-facing APIs.
-- **NEVER** expose SDK credentials in client-side code.
+- Validate and sanitize all user-provided data (URLs, base64 strings).
+- **NEVER** expose the `z-ai-web-dev-sdk` or related credentials to the client side.
 
-## Integration Example: Express.js API
+## Integration Example: Express.js API (Recommended)
 
-This example shows how to initialize and cache the SDK instance for high-performance server-side processing.
+This pattern demonstrates optimal server-side initialization by caching the SDK instance globally.
 
 ```javascript
 import express from 'express';
@@ -389,26 +384,32 @@ import ZAI from 'z-ai-web-dev-sdk';
 const app = express();
 app.use(express.json());
 
+// Global variable to hold the initialized SDK instance
 let zaiInstance;
 
-// Initialize SDK once globally for efficiency
+// Initialize SDK once on startup
 async function initZAI() {
-  zaiInstance = await ZAI.create();
-  console.log('ZAI SDK Initialized.');
+  try {
+    zaiInstance = await ZAI.create();
+    console.log('ZAI SDK successfully initialized.');
+  } catch (err) {
+    console.error('FATAL: Failed to initialize ZAI SDK:', err);
+    process.exit(1);
+  }
 }
 
 app.post('/api/analyze-image', async (req, res) => {
   if (!zaiInstance) {
-    return res.status(503).json({ error: 'Server initializing ZAI SDK' });
+    return res.status(503).json({ error: 'Server initialization pending.' });
+  }
+
+  const { imageUrl, question } = req.body;
+
+  if (!imageUrl || !question) {
+    return res.status(400).json({ error: 'imageUrl and question are required parameters.' });
   }
 
   try {
-    const { imageUrl, question } = req.body;
-
-    if (!imageUrl || !question) {
-      return res.status(400).json({ error: 'imageUrl and question are required' });
-    }
-
     const response = await zaiInstance.chat.completions.createVision({
       messages: [
         {
@@ -426,17 +427,16 @@ app.post('/api/analyze-image', async (req, res) => {
       success: true,
       analysis: response.choices[0]?.message?.content
     });
+
   } catch (error) {
-    console.error('API Error:', error.message);
-    res.status(500).json({ success: false, error: 'Internal Server Error during analysis.' });
+    console.error('API Error during vision request:', error.message);
+    res.status(500).json({ success: false, error: 'Internal Server Error.' });
   }
 });
 
 initZAI().then(() => {
-  app.listen(3000, () => {
-    console.log('Vision chat API running on port 3000');
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`Vision chat API running on port ${PORT}`);
   });
-}).catch(err => {
-  console.error('Failed to initialize ZAI SDK:', err);
-  process.exit(1);
 });
