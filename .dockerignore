@@ -13,6 +13,5 @@ Dockerfile
 .dockerignore
 README.md
 LICENSE
-.env
-.env.*
+.env*
 coverage
