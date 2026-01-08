@@ -10,7 +10,10 @@ async function main() {
     try {
         console.log(`> ${prompt}`);
         
-        const response = await (await ZAI.create()).chat.completions.create({
+        // Optimization: Initialize client first to avoid nested await structure
+        const client = await ZAI.create();
+
+        const response = await client.chat.completions.create({
             messages: [{ role: "user", content: prompt }],
             model: "glm-4-flash", 
             stream: false,
@@ -25,10 +28,13 @@ async function main() {
             console.log(reply);
         } else {
             console.error('ERROR: Empty response.');
+            // Keeping verbose logging for API debugging
             console.error(JSON.stringify(response, null, 2));
         }
     } catch (err) {
-        console.error("\nFATAL ERROR:", (err as Error).message || err);
+        // Optimization: Use safer instanceof check for error messaging
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.error("\nFATAL ERROR:", errorMessage);
     }
 }
 
