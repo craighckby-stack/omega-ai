@@ -24,7 +24,7 @@ jobs:
     - name: Setup Bun
       uses: oven-sh/setup-bun@v1
       with:
-        bun-version: 1.1.x # Use specific major version or range
+        bun-version: 1.1.x
 
     - name: Cache dependencies
       id: cache-bun
@@ -32,8 +32,7 @@ jobs:
       with:
         path: ~/.bun/install/cache
         key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb') }}
-        restore-keys: |
-          ${{ runner.os }}-bun-
+        restore-keys: ${{ runner.os }}-bun-
 
     - name: Install dependencies
       run: bun install --frozen-lockfile
@@ -48,11 +47,10 @@ jobs:
 
     - name: Deploy to production
       run: |
-        echo "Deploying OMEGA to production..."
-        # Add your actual deployment logic here (e.g., using a specific deployment tool or SSH)
-        echo "Deployment complete!"
+        echo "Initiating OMEGA deployment."
+        # Add actual deployment logic here.
+        echo "Deployment complete."
 
-    - name: Notify deployment
+    - name: Notify deployment status
       if: always()
-      run: |
-        echo "OMEGA deployed successfully! Commit SHA: ${{ github.sha }}"
+      run: echo "Deployment status: SUCCESS (SHA: ${{ github.sha }})"
